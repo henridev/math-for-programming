@@ -1,0 +1,11 @@
+{
+    "editor.formatOnSave": true,
+    "editor.mouseWheelZoom": true,
+    "editor.fontFamily": "Fira Code",
+    "editor.fontWeight": "450",
+    "python.analysis.extraPaths": [
+        "/usr/local/lib/python3.8/dist-packages",
+        "./chapter-2/src",
+        "/usr/lib/python3/dist-packages"
+    ]
+}
