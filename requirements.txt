@@ -30,6 +30,8 @@ ipykernel==5.0.0
 # kiwisolver==1.0.1
 # MarkupSafe==1.0
 matplotlib==3.3.3
+PyOpenGL==3.1.5
+pygame==2.0.1
 # mistune==0.8.3
 # nbconvert==5.4.0
 # nbformat==4.4.0
