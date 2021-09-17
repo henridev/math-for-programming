@@ -1,0 +1,146 @@
+from matplotlib import colors
+from draw3d import *
+from OpenGL.error import Error
+from vectors import dot
+
+def check_matrix_multiplication_validity(a, b, isPrint=False):
+    a_rows = len(a)
+    b_rows = len(b)
+    subs_a = iter(a)
+    len_a = len(next(subs_a))
+    subs_b = iter(b)
+    len_b = len(next(subs_b))
+    valid_b_columns = all(len(sub) == len_a for sub in subs_a)
+    valid_a_columns = all(len(sub) == len_b for sub in subs_b)
+    if not valid_b_columns or not valid_a_columns:
+        raise Error("incongruent column lengths")
+    a_columns = len(a[0])
+    b_columns = len(b[0])
+    if a_columns != b_rows:
+        raise Error(f'{a_columns} columns of a not compatible with {b_rows} rows of b')
+    if isPrint:
+        print(f'result will be a {a_rows} X {b_columns} matrix')
+
+
+def matrix_multiply(a, b, isPrint=False):
+    check_matrix_multiplication_validity(a, b, isPrint)
+    return tuple(
+        tuple(dot(row, col) for col in zip(*b))
+        for row in a
+    )
+
+def transpose(matrix):
+    return tuple(zip(*matrix))
+
+def polygon_segments_3d(points, color='blue'):
+    count = len(points)
+    return [Segment3D(points[i], points[(i+1) % count], color=color) for i in
+            range(0, count)]
+
+
+dino_vectors = [
+    (6, 4), (3, 1), (1, 2), (-1, 5), (-2, 5), (-3, 4), (-4, 4),
+    (-5, 3), (-5, 2), (-2, 2), (-5, 1), (-4, 0), (-2, 1), (-1, 0), (0, -3),
+    (-1, -4), (1, -4), (2, -3), (1, -2), (3, -1), (5, 1)
+]
+
+# dino_3d = [(x + 3, y, 1) for x, y in dino_vectors]
+
+# draw3d(
+#     Points3D(*dino_3d, color='blue'),
+#     *polygon_segments_3d(dino_3d)
+# )
+
+new_points = matrix_multiply(
+    (
+        (1, 1),
+        (0, 1),
+        (0, 1),
+    ),
+    (
+        (6,),
+        (4,)
+    )
+)
+
+one_up_three_left_one_elevate = (
+    (1, 0, 3),
+    (0, 1, 1),
+    (0, 0, 1),
+)
+
+# print(new_points)
+
+
+def transpose(matrix):
+    return tuple(zip(*matrix))
+
+
+def multiply_matrix_vector(matrix, vector):
+    return tuple(
+        dot(row, vector)
+        for row in matrix
+    )
+
+
+dino_vectors_3d = [(x, y, 1) for x, y in dino_vectors]
+# translated_simple = [multiply_matrix_vector(one_up_three_left_one_elevate, v) for v in dino_vectors_3d]
+# translated_complex = [
+#     sum(
+#         transpose(
+#             matrix_multiply(
+#                 one_up_three_left_one_elevate,
+#                 transpose([v])
+#             )),
+#         ()
+#     )
+#     for v in dino_vectors_3d
+# ]
+
+# draw3d(
+#     Points3D(*translated_simple, color='blue'),
+#     *polygon_segments_3d(translated_simple)
+# )
+
+
+one_up_three_left_one_demote = (
+    (1, 0, 3),
+    (0, 1, 1),
+    (0, 0, -1),
+)
+
+rotation_90_translation = (
+    (0, -1, 3),
+    (1, 0, 1),
+    (0, 0, 1),
+)
+
+translated_earlier = [multiply_matrix_vector(one_up_three_left_one_demote, v) for v in dino_vectors_3d]
+translated_simple = [multiply_matrix_vector(rotation_90_translation, v) for v in dino_vectors_3d]
+
+
+draw3d(
+    Points3D(*translated_simple, color='red'),
+    *polygon_segments_3d(translated_simple, color='red'),
+    Points3D(*translated_earlier, color='green'),
+    *polygon_segments_3d(translated_earlier, color='green')
+)
+
+
+def translate_3d(translation):
+    '''
+    takes a translation vector
+    returns a new function that applies that translation to a 3D vector
+    '''
+    def new_function(target):
+        a, b, c = translation
+        x, y, z = target
+        matrix = ((1, 0, 0, a),
+                  (0, 1, 0, b),
+                  (0, 0, 1, c),
+                  (0, 0, 0, 1))  # 2 Builds the 4x4 matrix for the translation, and on the next line, turns (x,y,z) into a 4D vector with a fourth coordinate 1
+        vector = (x, y, z, 1)
+        # 3 Does the 4D matrix transformation
+        x_out, y_out, z_out, _ = multiply_matrix_vector(matrix, vector)
+        return (x_out, y_out, z_out)
+    return new_function

@@ -699,8 +699,527 @@ or a **linear map**. Let’s consider an in-depth example of a familiar linear m
 
 ### projecting as a linear map from 3d to 2d
 
-We already saw a vector function that accepts 3D vectors and produces 2D vectors: a projection of a 3D vector onto the x, y plane (section 3.5.2). This transformation (we can call it P) takes vectors of the form (x, y, z) and returns these with their z component deleted: (x, y). I’ll spend some time carefully showing why this is a linear map and how it preserves vector addition and scalar multiplication.
+We already saw a vector function that accepts 3D vectors and produces 2D vectors: a projection of a 3D vector onto the x, y plane (section 3.5.2). This transformation (we can call it P) takes vectors of the form (x, y, z) and returns these with their z component deleted: (x, y). I’ll spend some time carefully showing why this is a **linear map** and how it preserves vector addition and scalar multiplication.
 
 First of all, let’s write P as a matrix. To accept 3D vectors and return 2D vectors, it should be a 2x3 matrix. Let’s follow our trusty formula for finding a matrix by testing the action of P on standard basis vectors. Remember, in 3D the standard basis vectors are defined as e1 = (1, 0,
 0), e2 = (0, 1, 0), and e3 = (0, 0, 1), and when we apply the projection to these three vectors,
 we get (1, 0), (0, 1), and (0, 0), respectively. We can write these as column vectors  
+$$
+\hat{i} = \begin{bmatrix}
+     1 \\
+     0 \\
+\end{bmatrix}
+
+\hat{j} = \begin{bmatrix}
+     0 \\
+     1 \\
+\end{bmatrix}
+
+\hat{k} = \begin{bmatrix}
+     0 \\
+     0 \\
+\end{bmatrix}
+
+\\
+
+\begin{bmatrix}
+    1 & 0 & 0 \\
+    0 & 1 & 0 \\
+\end{bmatrix}
+$$
+To check this, let’s multiply it by a test vector (a, b, c). The dot product of (a, b, c) with (1, 0,,0) is a, so that’s the first entry of the result. The second entry is the dot product of (a, b, c) with (0, 1, 0), or b. You can picture this matrix as grabbing a and b from (a, b, c) and ignoring c (figure 5.16).  
+
+
+$$
+\begin{bmatrix}
+    1 & 0 & 0 \\
+    0 & 1 & 0 \\
+\end{bmatrix} 
+\begin{bmatrix}
+    a \\
+    b \\
+    c \\
+\end{bmatrix} \\
+\\ =
+$$
+
+$$
+a\begin{bmatrix}
+    1 \\
+    0 \\
+\end{bmatrix} +
+b\begin{bmatrix}
+    0 \\
+    1 \\
+\end{bmatrix} +
+c\begin{bmatrix}
+    0 \\
+    0 \\
+\end{bmatrix} =
+\begin{bmatrix}
+    a \\
+    b \\
+\end{bmatrix}
+$$
+
+$$
+\begin{bmatrix}
+    (1, 0, 0) \cdot (a, b, c) \\
+    (0, 1, 0) \cdot (a, b, c) \\
+\end{bmatrix} =
+\begin{bmatrix}
+    a \\
+    b \\
+\end{bmatrix}
+$$
+
+This matrix does what we want: it deletes the third coordinate of a 3D vector, leaving us with
+only the first two coordinates. It’s good news that we can write this projection as a matrix, but
+let’s also give an algebraic proof that this is a linear map. To do this, we have to show that the
+two key conditions of linearity are satisfied.  
+
+#### PROVING PROJECTION PRESERVES VECTOR SUMS
+
+If P (a 3d to 2d projection) is linear,That is, 
+
+- vector sum u + v = w should be respected by P =>  P(u) + P(v) = P(w)
+
+- scalar multiplication s * u  = w should be respected by P => P(s * u) = s * P(u)
+  $$
+  \vec{u} = \begin{bmatrix}
+      u_1 \\
+      u_2 \\
+      u_3 \\
+  \end{bmatrix} \\
+  \vec{v} = \begin{bmatrix}
+      v_1 \\
+      v_2 \\
+      v_3 \\
+  \end{bmatrix} \\
+  \vec{w} = \begin{bmatrix}
+      u_1 + v_1 \\
+      u_2 + v_2 \\
+      u_3 + v_3 \\
+  \end{bmatrix} \\
+  
+  P = \begin{bmatrix}
+      1 & 0 & 0 \\
+      0 & 1 & 0 \\
+  \end{bmatrix}
+  $$
+
+  $$
+  P(\vec{u}) = \begin{bmatrix}
+      u_1 \\
+      u_2 \\
+  \end{bmatrix} \\
+  P(\vec{v}) = \begin{bmatrix}
+      v_1 \\
+      v_2 \\
+  \end{bmatrix} \\
+  P(\vec{u}) + P(\vec{v}) = \begin{bmatrix}
+     u_1 + v_1 \\
+     v_2 + v_2 \\
+  \end{bmatrix} \\
+  P(\vec{w}) = = \begin{bmatrix}
+     u_1 + v_1 \\
+     v_2 + v_2 \\
+  \end{bmatrix}
+  $$
+
+$$
+P(s*\vec{u}) = \begin{bmatrix}
+   s * u_1 \\
+   s * u_2 \\
+\end{bmatrix} \\
+s*P(\vec{u}) = \begin{bmatrix}
+   s * u_1 \\
+   s * u_2 \\
+\end{bmatrix}
+$$
+
+visual representation
+
+<img src="https://res.cloudinary.com/dri8yyakb/image/upload/v1631687764/D4D83AC1-5F32-401F-B39D-E70BE359D0BA_vta4ko.png"/>
+
+
+
+<img src="https://res.cloudinary.com/dri8yyakb/image/upload/v1631687753/BF2F8C71-364E-47ED-895D-6AF3E8D1D7D8_jd8iob.png"/>
+
+<img src="https://res.cloudinary.com/dri8yyakb/image/upload/v1631687751/82BF540B-B988-457B-975C-B67EFA89EFBF_kurqdm.png"/>
+
+In other words, if three vectors u, v, and w form a vector sum u + v = w, then their “shadows”
+in the x,y plane also form a vector sum. Now that you’ve got some insight into linear
+transformation from 3D to 2D and a matrix that represents it, let’s return to our discussion of
+linear maps in general.  
+
+If Q (a 2d to 3d projection) is linear
+$$
+Q = \begin{bmatrix}
+    1 & 0 \\
+    0 & 1 \\
+    0 & 0 \\
+\end{bmatrix} 
+\\
+\vec{u} = \begin{bmatrix}
+    u_1 \\
+    u_2 \\
+\end{bmatrix} \\
+\vec{v} = \begin{bmatrix}
+    u_1 \\
+    u_2 \\
+\end{bmatrix}
+$$
+
+$$
+Q(\vec{u}) = \begin{bmatrix}
+    u_1 \\
+    u_2 \\
+    0
+\end{bmatrix} \\
+Q(\vec{v}) = \begin{bmatrix}
+    v_1 \\
+    v_2 \\
+    0
+\end{bmatrix} \\
+Q(\vec{u}) + Q(\vec{v}) = \begin{bmatrix}
+   u_1 + v_1 \\
+   v_2 + v_2 \\
+   0
+\end{bmatrix} \\
+Q(\vec{w}) =  \begin{bmatrix}
+   u_1 + v_1 \\
+   v_2 + v_2 \\
+   0
+\end{bmatrix}
+$$
+
+### composing linear maps
+
+The beauty of matrices is that they store all of the data required to evaluate a linear function
+on a given vector. What’s more, the dimensions of a matrix tell us the dimensions of input
+vectors and output vectors for the underlying function. We captured that visually in figure 5.20
+by drawing machines for matrices of varying dimensions, whose input and output slots have
+different shapes. Here are four examples we’ve seen, labelled with letters so we can refer back
+to them.  
+
+<img src="https://res.cloudinary.com/dri8yyakb/image/upload/v1631688026/5B265E78-247A-4E72-A1BF-05302E7BD7F5_hawb1c.png"/>
+
+Drawn like this, it’s easy to pick out which pairs of linear function machines could be welded
+together to build a new one. For instance, the output slot of M has the same shape as the input
+slot of P, so we could make the composition P(M(v)) for a 3D vector v. The output of M is a 3D
+vector that can be passed right along into the input slot of P (figure 5.21).  
+
+<img src="https://res.cloudinary.com/dri8yyakb/image/upload/v1631688206/48830168-B7D2-4F91-92A3-E1E32EEED461_oyvp8b.png"/>
+
+When the dimensions match in this way, so do the slots, and we can compose the linear functions and multiply their matrices.  
+
+Thinking of P and M as matrices, the composition of P and M is written PM as a matrix product.
+**(Remember, if PM acts on a vector v as PMv, M is applied first and then P.)** When v = (1, 1, 1),
+the product PMv is a product of two matrices and a column vector, and it can be simplified into
+a single matrix times a column vector if we evaluate **PM** (figure 5.23).  
+$$
+P = \begin{bmatrix}
+   1 & 0 & 0 \\
+   0 & 1 & 0 \\
+\end{bmatrix} (2X3) \\
+M = \begin{bmatrix}
+   -1 & -1 & 0 \\
+   -2 & 1 & 2 \\
+   1 & 0 & -1 \\
+\end{bmatrix}  (3X3) \\
+
+\text{first M should be applied then P should be applied} \\
+
+
+\begin{bmatrix}
+   1 & 0 & 0 \\
+   0 & 1 & 0 \\
+\end{bmatrix}
+\begin{bmatrix}
+   -1 & -1 & 0 \\
+   -2 & 1 & 2 \\
+   1 & 0 & -1 \\
+\end{bmatrix} = \\
+\begin{bmatrix}
+   (1, 0, 0)(-1, -2, 1) & (1, 0, 0)(-1, 1, 0) & (1, 0, 0)(0, 2, -1) \\
+   (0, 1, 0)(-1, -2, 1) & (0, 1, 0)(-1, 1, 0) & (0, 1, 0)(0, 2, -1)\\
+\end{bmatrix} = \\
+\begin{bmatrix}
+   -1 & -1 & 0 \\
+   -2 & 1 & 2\\
+\end{bmatrix}
+$$
+now things are easier to calculate instead of applying M and then P to each vector we can just apply the matrix PM to the vectors.
+
+As a programmer, you’re used to thinking of functions in terms of the types of data they
+consume and produce. I’ve given you a lot of notation and terminology to digest thus far in this
+chapter, but as long as you grasp this core concept, you’ll get the hang of it eventually.
+I strongly encourage you to work through the following exercises to make sure you understand
+the language of matrices. For the rest of this chapter and the next, there won’t be many big
+new concepts, only applications of what we’ve seen so far. These applications will give you even
+more practice with matrix and vector computations.  
+$$
+\begin{bmatrix}
+   0 & 0 & 0 & 0 & 1 \\
+   0 & 0 & 0 & 1 & 0 \\
+   1 & 0 & 0 & 0 & 0 \\
+   0 & 1 & 0 & 0 & 0 \\
+   0 & 0 & 1 & 0 & 0 \\
+   0 & 0 & 0 & 1 & 0 \\
+\end{bmatrix}\begin{bmatrix}
+   l \\
+   e \\
+   m \\
+   o \\
+   n \\
+   s
+\end{bmatrix} = 
+\begin{bmatrix}
+   s \\
+   o \\
+   l \\
+   e \\
+   m \\
+   n
+\end{bmatrix}
+$$
+
+## 5.3 translating vectors with matrices
+
+- advantage of matrices => computations look the same in any number of dimensions.
+- no worries about picturing the configurations of vectors in 2D or 3D, they can be plugged into the formulas for matrix multiplication
+- especially useful when we want to do computations in more than three
+  dimensions.
+
+In this section, we’ll cover a computation that requires doing computation in higher dimensions: translating vectors using a matrix.  
+
+### making plane translations linear
+
+- translations are not linear transformations.
+  - the origin moves
+  - vector sums are not preserved.
+
+How can we hope to execute a 2D transformation with a matrix if it is not a linear
+transformation? =>The trick is that we can think of our 2D points to translate as living in 3D. Let’s return to our dinosaur from chapter 2. The dinosaur was composed of 21 points.
+
+If we want to translate the dinosaur to the right by 3 units and up by 1 unit, we could simply
+add the vector (3, 1) to each of the dinosaur’s vertices. But this isn’t a linear map, so we can’t
+produce a 2x2 matrix that does this translation. If we think of the dinosaur as an inhabitant of
+3D space instead of the 2D plane, it turns out we can formulate the translation as a matrix.
+Bear with me for a moment while I show you the trick; I’ll explain how it works shortly. 
+
+Let’s give every point of the dinosaur a z-coordinate of 1. Then we can draw it in 3D by connecting
+each of the points with segments and see that the resulting polygon lies on the plane where z
+= 1
+
+<img src="https://res.cloudinary.com/dri8yyakb/image/upload/v1631860309/55CBD7F7-9D35-4EF0-A052-FFD26E047509_rmfnby.png"/>
+
+<img src="https://res.cloudinary.com/dri8yyakb/image/upload/v1631860301/067CAFFC-B39D-4821-884F-18D41E46850C_blaa7a.png"/>
+
+ “skews” 3D space, so that the origin stays put, but the plane where z = 1 is translated as desired. and the dino moves three to the right and one up
+
+### finding a 3d matrix for 2d translation
+
+- columns of our “magic” matrix, like the columns of any matrix, tell us where the standard
+  basis vectors end up after being transformed. 
+- Calling this matrix T, the vectors e1, e2, and e3 would be transformed into the vectors Te1 = (1, 0, 0), Te2 = (0, 1, 0), and Te3 = (3, 1, 1). 
+- e1 and e2 are unaffected, and e3 changes only its x- and y-components (figure 5.29).  
+
+<img src="https://res.cloudinary.com/dri8yyakb/image/upload/v1631861887/4F3D71F3-BFD7-463C-A965-BD75B384ED31_hdozra.png"/>
+
+Any point in 3D and, therefore, any point on our dinosaur is built as a linear combination of e1,
+e2, and e3. 
+$$
+x \hat{e_1} + y \hat{e_2} + z \hat{e_3} \\
+\\
+\text{For instance, the tip of the dinosaur’s tail is at (6, 4, 1)}\\
+\\
+6 \hat{e_1} + 4 \hat{e_2} + 1 \hat{e_3} \\
+\\
+\text{only the effect on e3 moves the point } \\
+T(\hat{e_3}_{original}) = \hat{e_3}_{original} + (3, 1, 0) \\
+\\
+\text{so that the point is translated by +3 in the x direction and +1 in the y direction. } \\
+\text{You can also see this algebraically. Any vector (x, y, 1) is translated by (3, 1, 0) by this matrix: } \\
+$$
+
+$$
+\begin{bmatrix}
+   (1,0,3) \cdot (x,y,1) \\
+   (0,1,1) \cdot (x,y,1) \\
+   (0,0,1) \cdot (x,y,1)\\
+\end{bmatrix} =
+\begin{bmatrix}
+   x + 3 \\
+   y + 1 \\
+   1 \\
+\end{bmatrix}
+$$
+
+If you want to translate a collection of 2D vectors by some vector (a, b), the general steps are
+as follows:
+
+1. Move the 2D vectors into the plane in 3D space, where z = 1 and each has a z-coordinate
+   of 1 
+
+2. Multiply the vectors by the matrix with your given choices of a and b plugged in:  
+
+   
+
+$$
+\begin{bmatrix}
+   1 & 0 & a \\
+   0 & 1 & b \\
+   0 & 0 & 1\\
+\end{bmatrix}
+$$
+
+3. Delete the z-coordinate of all of the vectors so you are left with 2D vectors as a result.  
+
+Now that we can do translations with matrices, we can creatively combine them with other linear
+transformations.  
+
+
+
+### combining translations with other linear transformations
+
+In the previous matrix, the first two columns are exactly e1 and e2, meaning that only the change
+in e3 moves a figure. We don’t want T(e1) or T(e2) to have any z-component because that would
+move the figure out of the plane z = 1. But we can modify or interchange the other components
+
+
+
+<img src="https://res.cloudinary.com/dri8yyakb/image/upload/v1631863239/Inked_B4465215-5AFD-40AA-99C2-60B26CD74A1D__LI_kqpo5f.jpg"/>
+
+It turns out you can put any 2x2 matrix in the top left by doing the corresponding linear transformation in addition to the translation specified in the third column via the a and b tuple. For instance, this matrix  
+$$
+\begin{bmatrix}
+   0 & -1 \\
+   1 & 0 \\
+\end{bmatrix}
+$$
+produces a 90° counterclockwise rotation. Inserting it in the translation matrix, we get a new
+matrix that rotates the x,y plane by 90° and then translates it by (3, 1)
+$$
+\begin{bmatrix}
+   0 & -1 & 3 \\
+   1 & 0 & 1 \\
+   0 & 0 & 1 \\
+\end{bmatrix}
+$$
+<img src="https://res.cloudinary.com/dri8yyakb/image/upload/v1631863662/Figure_1_iukdr2.png"/>
+
+Once you get the hang of doing 2D translations and transformations with a matrix, you can apply the same approach to doing a 3D translation. To do that, you’ll have to use a 4x4 matrix and enter the mysterious
+world of 4D.  
+
+### translating 3d objects in 4d world
+
+What is the fourth dimension? A 4D vector would be an arrow with some length, width, depth,
+and one other dimension. When we built 3D space from 2D space, we added a z-coordinate.
+That means that 3D vectors can live in the x,y plane, where z = 0, or they can live in any other
+parallel plane, where z takes a different value. Figure 5.33 shows some of these parallel planes.  
+
+<img src="https://res.cloudinary.com/dri8yyakb/image/upload/v1631889912/870AC566-1AFD-47F9-9027-75D55D528C61_qrla7f.png"/>
+
+We can think of four dimensions in analogy to this model: a collection of 3D spaces that are
+indexed by some fourth coordinate. One way to interpret the fourth coordinate is “time.” Each
+snapshot at a given time is a 3D space, but the collection of all of the snapshots is a fourth
+dimension called a spacetime. The origin of the spacetime is the origin of the space at the
+moment when time, t, is equal to 0.
+
+<img src="https://res.cloudinary.com/dri8yyakb/image/upload/v1631890098/19EDD58C-0E15-48F9-88E7-42075CB2484B_slofhc.png"/>
+
+This is the starting point for Einstein’s theory of relativity. (In fact, you are now qualified to go
+read about this theory because it is based on 4D spacetime and linear transformations given by
+4x4 matrices.)
+
+Vector math is indispensable in higher dimensions because we quickly run out of good analogies.
+For five, six, seven, or more dimensions, I have a hard time picturing them, but the coordinate
+math is no harder than in two or three dimensions. For our current purposes, it’s sufficient to
+think of a 4D vector as a four-tuple of numbers.
+
+Let’s replicate the trick that worked for translating 2D vectors in 3D. If we start with a 3D vector
+like (x, y, z) and we want to translate it by a vector (a, b, c), we can attach a fourth coordinate  
+$$
+\text{2d translation and transformation} \\
+\\
+\text{translation stand alone} \\
+\begin{bmatrix}
+   1 & 0 & a_{translation} \\
+   0 & 1 &  b_{translation} \\
+   0 & 0 & 1 \\
+\end{bmatrix} 
+\begin{bmatrix}
+   x + a_{translation} \\
+   y + b_{translation} \\
+   1 \\
+\end{bmatrix} \\
+\\
+\\
+\text{transformation and translation combined} \\
+\begin{bmatrix}
+   \hat{i_x}_{transformation} & \hat{j_x}_{transformation} & a_{translation} \\
+   \hat{i_y}_{transformation} & \hat{j_y}_{transformation} &  b_{translation} \\
+   0 & 0 & 1 \\
+\end{bmatrix} \\
+$$
+
+
+now in 3  ...
+$$
+\text{3d translation and transformation}\\
+\\
+\text{translation stand alone} \\
+\begin{bmatrix}
+   1 & 0 & 0 & a_{translation} \\
+   0 & 1 & 0 & b_{translation} \\
+   0 & 0 & 1 & c_{translation} \\
+   0 & 0 & 0 & 1 \\
+\end{bmatrix} 
+\begin{bmatrix}
+   x \\
+   y \\
+   z \\
+   1 \\
+\end{bmatrix} =\begin{bmatrix}
+   x + a_{translation} \\
+   y + b_{translation}\\
+   z + c_{translation} \\
+   1 \\
+\end{bmatrix} \\
+\\
+\\
+\text{transformation and translation combined} \\
+\begin{bmatrix}
+   \hat{i_x}_{transformation} & \hat{j_x}_{transformation} & a_{translation} \\
+   \hat{i_y}_{transformation} & \hat{j_y}_{transformation} &  b_{translation} \\
+   \hat{i_z}_{transformation} & \hat{j_z}_{transformation} &  c_{translation} \\
+   0 & 0 & 1 \\
+\end{bmatrix}
+$$
+This matrix increases the x-coordinate by a, the y-coordinate by b, and the z-coordinate by c,
+so it does the transformation required to translate by the vector (a, b, c). We can package in a
+Python function the work of adding a fourth coordinate, applying this 4x4 matrix, and then
+deleting the fourth coordinate:  
+
+```python
+def translate_3d(translation):
+    '''
+    takes a translation vector
+    returns a new function that applies that translation to a 3D vector
+    '''
+    def new_function(target):
+        a, b, c = translation
+        x, y, z = target
+        matrix = ((1, 0, 0, a),
+                  (0, 1, 0, b),
+                  (0, 0, 1, c),
+                  (0, 0, 0, 1))  # 2 Builds the 4x4 matrix for the translation, and on the next line, turns (x,y,z) into a 4D vector with a fourth coordinate 1
+        vector = (x, y, z, 1)
+        # 3 Does the 4D matrix transformation
+        x_out, y_out, z_out, _ = multiply_matrix_vector(matrix, vector)
+        return (x_out, y_out, z_out)
+    return new_function
+```
+

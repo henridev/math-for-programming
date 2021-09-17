@@ -271,8 +271,8 @@ draw3d(
 
 $$
 \begin{bmatrix}
-     a \ \ b  \\
-     c \ \ d \\
+     a & b  \\
+     c & d \\
 \end{bmatrix} 
 
 *

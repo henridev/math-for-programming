@@ -1,4 +1,6 @@
 import math
+
+from OpenGL.error import Error
 from vectors import *
 from teapot import load_triangles
 from draw_model import draw_model
@@ -383,3 +385,162 @@ print(
         ),
         ((0,), (0,), (1,)))  # specify , to show its a tuple
 )
+
+
+'''
+Exercise 5.13: What are the dimensions of this matrix?
+3x5 =>  3 rows and 5 columns
+'''
+
+'''
+Exercise 5.14: What are the dimensions of a 2D column vector considered as a matrix? => 2x1
+What about a 2D row vector? => 1x2 A 3D column vector? => 3x1 A 3D row vector? => 1x3
+'''
+
+'''
+Mini-project 5.15: Many of our vector and matrix operations make use of the Python zip function. When given input
+lists of different sizes, this function truncates the longer of the two rather than failing. This means that when we pass
+invalid inputs, we get meaningless results back. For instance, there is no such thing as a dot product between a 2D
+vector and a 3D vector, but our dot function returns something anyway:
+
+Add safeguards to all of the vector arithmetic functions so that they throw exceptions rather than returning values for
+vectors of invalid sizes. Once you’ve done that, show that matrix_multiply no longer accepts a product of a 3x2
+and a 4x5 matrix.
+'''
+
+def check_matrix_multiplication_validity(a, b):
+    a_rows = len(a)
+    b_rows = len(b)
+    subs_a = iter(a)
+    len_a = len(next(subs_a))
+    subs_b = iter(b)
+    len_b = len(next(subs_b))
+    valid_b_columns = all(len(sub) == len_a for sub in subs_a)
+    valid_a_columns = all(len(sub) == len_b for sub in subs_b)
+    print(valid_b_columns, valid_a_columns)
+    if not valid_b_columns or not valid_a_columns:
+        raise Error("incongruent column lengths")
+    a_columns = len(a[0])
+    b_columns = len(b[0])
+    if a_columns != b_rows:
+        raise Error(f'{a_rows} rows of a not compatible with {b_columns} columns of b')
+    print(f'result will be a {a_rows} X {b_columns} matrix')
+
+
+def matrix_multiply(a, b):
+    check_matrix_multiplication_validity(a, b)
+    return tuple(
+        tuple(dot(row, col) for col in zip(*b))
+        for row in a
+    )
+
+
+# matrix_multiply(
+#     (
+#         (1,),
+#         (1,)
+#     ),
+#     (
+#         (1,),
+#         (1,),
+#         (1,)
+#     )
+# )
+
+
+'''
+Exercise 5.16: Which of the following are valid matrix products? For those that are valid, what dimension is the product
+matrix?
+
+2x2 | 4x4 => not
+2x4 | 4x2 => yes
+3x1 | 1x8 => yes
+3x3 | 2x3 => not
+'''
+
+
+'''
+Exercise 5.17: A matrix with 15 total entries is multiplied by a matrix with 6 total entries. What are the dimensions of
+the two matrices, and what is the dimension of the product matrix?
+
+mXn = 15 
+kXr = 6
+
+
+n=k
+
+mXn = 5x3
+kXr = 3x2
+
+or
+
+mXn = 15x1
+kXr = 1x6
+'''
+
+
+'''
+Exercise 5.18: Write a function that turns a column vector into a row vector, or vice versa. Flipping a matrix on its side
+like this is called transposition and the resulting matrix is called the transpose of the original.
+
+(
+    (-2,),
+    (1,),
+    (0,)
+) => col vector
+
+((-2,1,0),) => row vector
+'''
+
+def transpose(matrix):
+    return tuple(zip(*matrix))
+
+
+'''
+Exercise 5.20: We want to multiply three matrices together: 
+A is 5x7, B is 2x3, and C is 3x5. 
+What order can they be multiplied in and what is the size of the result?
+
+BCA
+'''
+
+'''
+Exercise 5.21: Projection onto the y,z plane and onto the x,z plane are also linear maps from 3D to 2D. 
+What are their matrices?
+
+project onto x,z
+
+   1 & 0 & 0 
+   0 & 0 & 1
+
+project onto y,z
+
+   0 & 1 & 0 
+   0 & 0 & 1 
+
+'''
+
+
+'''
+Exercise 5.22: Show by example that the infer_matrix function from a previous exercise can create matrices for
+linear functions whose inputs and outputs have different dimensions.
+Solution: One function we could test would be projection onto the x,y plane, which takes in 3D vectors and returns 2D
+vectors. We can implement this linear transformation as a Python function and then infer its 2x3 matrix:
+'''
+
+def project_xy(v):
+    x, y, z = v
+    return (x, y)
+
+
+print(infer_matrix(3, project_xy))
+
+'''
+Exercise 5.23: Write a 4x5 matrix that acts on a 5D vector by deleting the third of its five entries, thereby producing a
+4D vector. For instance, multiplying it with the column vector form of (1, 2, 3, 4, 5) should return (1, 2, 4, 5).
+
+   1 & 0 & 0 & 0 & 0
+   0 & 1 & 0 & 0 & 0
+   0 & 0 & 0 & 1 & 0
+   0 & 0 & 0 & 0 & 1
+'''
