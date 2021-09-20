@@ -144,3 +144,21 @@ def translate_3d(translation):
         x_out, y_out, z_out, _ = multiply_matrix_vector(matrix, vector)
         return (x_out, y_out, z_out)
     return new_function
+
+
+def translate_2d(translation):
+    '''
+    takes a translation vector
+    returns a new function that applies that translation to a 3D vector
+    '''
+    def new_function(target):
+        a, b = translation
+        x, y = target
+        matrix = ((1, 0, a),
+                  (0, 1, b),
+                  (0, 0, 1))  # 2 Builds the 4x4 matrix for the translation, and on the next line, turns (x,y,z) into a 4D vector with a fourth coordinate 1
+        vector = (x, y, 1)
+        # 3 Does the 4D matrix transformation
+        x_out, y_out, _ = multiply_matrix_vector(matrix, vector)
+        return (x_out, y_out)
+    return new_function

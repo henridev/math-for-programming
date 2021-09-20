@@ -1,12 +1,12 @@
 import pygame
-from pygame.locals import *
-from OpenGL.GL import *
-from OpenGL.GLU import *
-import matplotlib.cm
 import camera
+import matplotlib.cm
 from vectors import *
 from math import *
 from transforms import *
+from pygame.locals import *
+from OpenGL.GL import *
+from OpenGL.GLU import *
 
 def normal(face):
     return(cross(subtract(face[1], face[0]), subtract(face[2], face[0])))
@@ -30,7 +30,7 @@ def Axes():
             glVertex3fv(vertex)
     glEnd()
 
-def draw_model(faces, color_map=blues, light=(1, 2, 3), glRotatefArgs=None, get_matrix=None):
+def draw_model(faces, color_map=blues, light=(1, 2, 3), glRotatefArgs=None, get_matrix=None, translation_over_time=False, translation_speed=1):
     pygame.init()
     display = (400, 400)
     window = pygame.display.set_mode(display, DOUBLEBUF | OPENGL)
@@ -60,6 +60,12 @@ def draw_model(faces, color_map=blues, light=(1, 2, 3), glRotatefArgs=None, get_
                 # get 3x3 form matrix transformation
                 m = get_matrix(pygame.time.get_ticks())
                 # apply 3x3 to 3x1 vector
+                if translation_over_time and len(v) == 3:
+                    x, y, z = v
+                    t_dimension = pygame.time.get_ticks() / (10000/translation_speed)
+                    vector = (x, y, z, t_dimension)
+                    x_out, y_out, z_out, _ = multiply_matrix_vector(m, vector)
+                    return (x_out, y_out, z_out)
                 return multiply_matrix_vector(m, v)
             else:
                 return v

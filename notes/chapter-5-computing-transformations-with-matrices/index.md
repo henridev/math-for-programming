@@ -1223,3 +1223,178 @@ def translate_3d(translation):
     return new_function
 ```
 
+With translation packaged as a matrix operation, we can now combine that operation with other
+3D linear transformations and do them in one step. It turns out you can interpret the artificial
+fourth-coordinate in this setup as time, t.
+
+The two images in figure 5.36 could be snapshots of a teapot at t = 0 and t = 1, which is moving
+in the direction (2, 2, -3) at a constant speed. If you’re looking for a fun challenge, you can
+replace the vector (x, y, z, 1) in this implementation with vectors of the form (x, y, z, t), where
+the coordinate t changes over time. With t = 0 and t = 1, the teapot should match the frames
+in figure 5.36, and at the time between the two, it should move smoothly between the two
+positions. If you can figure out how this works, you’ll catch up with Einstein!
+So far, we’ve focused exclusively on vectors as points in space that we can render to a computer
+screen. This is clearly an important use case, but it only scratches the surface of what we can
+do with vectors and matrices. The study of how vectors and linear transformations work together
+in general is called linear algebra, and I’ll give you a broader picture of this subject in the next
+chapter, along with some fresh examples that are relevant to programmers.  
+
+```python
+import pygame
+import camera
+import sys
+import matplotlib.cm
+from vectors import *
+from math import *
+from transforms import *
+from pygame.locals import *
+from OpenGL.GL import *
+from OpenGL.GLU import *
+from teapot import load_triangles
+from draw_model import draw_model
+from transforms import polygon_map, multiply_matrix_vector
+
+# lighting stuff
+def normal(face):
+    return(cross(subtract(face[1], face[0]), subtract(face[2], face[0])))
+
+blues = matplotlib.cm.get_cmap('Blues')
+
+def shade(face, color_map=blues, light=(1, 2, 3)):
+    return color_map(1 - dot(unit(normal(face)), unit(light)))
+
+# helper Axis
+def Axes():
+    axes = [
+        [(-1000, 0, 0), (1000, 0, 0)],
+        [(0, -1000, 0), (0, 1000, 0)],
+        [(0, 0, -1000), (0, 0, 1000)]
+    ]
+    glBegin(GL_LINES)
+    for axis in axes:
+        for vertex in axis:
+            glColor3fv((1, 1, 1))
+            glVertex3fv(vertex)
+    glEnd()
+
+def draw_model(
+    faces, 
+    color_map=blues, 
+    light=(1, 2, 3), 
+    glRotatefArgs=None, 
+    get_matrix=None, 
+    translation_over_time=False, 
+    translation_speed=1
+):
+    # 1: Setup pygame
+    pygame.init()
+    display = (400, 400)
+    window = pygame.display.set_mode(display, DOUBLEBUF | OPENGL)
+    cam = camera.default_camera
+    cam.set_window(window)
+    gluPerspective(45, 1, 0.1, 50.0)
+    glTranslatef(0.0, 0.0, -5)
+ 
+    if glRotatefArgs:
+        glRotatef(*glRotatefArgs)
+    glEnable(GL_CULL_FACE)
+    glEnable(GL_DEPTH_TEST)
+    glCullFace(GL_BACK)
+
+    # 2: Handlers
+    while cam.is_shooting():
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+        Axes()
+        glBegin(GL_TRIANGLES)
+
+        # 3: Handlers
+        def do_matrix_transform(v):
+            if get_matrix:
+                # get 3x3 form matrix transformation
+                m = get_matrix(pygame.time.get_ticks())
+                # apply 3x3 to 3x1 vector
+                if translation_over_time and len(v) == 3:
+                    x, y, z = v
+                    t_dimension = pygame.time.get_ticks() / (10000/translation_speed)
+                    vector = (x, y, z, t_dimension)
+                    x_out, y_out, z_out, _ = multiply_matrix_vector(m, vector)
+                    return (x_out, y_out, z_out)
+                return multiply_matrix_vector(m, v)
+            else:
+                return v
+
+        transformed_faces = polygon_map(do_matrix_transform, faces)
+        for face in transformed_faces:
+            color = shade(face, color_map, light)
+            for vertex in face:
+                glColor3fv((color[0], color[1], color[2]))
+                glVertex3fv(vertex)
+        glEnd()
+        cam.tick()
+        pygame.display.flip()
+        
+def translate_3d(translation):
+    def new_function(target): 
+        a, b, c = translation
+        x, y, z = target
+        matrix = ((1, 0, 0, a), (0, 1, 0, b), (0, 0, 1, c), (0, 0, 0, 1))
+        vector = (x, y, z, 1)
+        x_out, y_out, z_out, _ = multiply_matrix_vector(matrix, vector)
+        return (x_out, y_out, z_out)
+    return new_function
+
+translation_steps = (2, 2, -3)
+
+def get_matrix(_t):
+    a, b, c = translation_steps
+    return (
+        (1, 0, 0, a),
+        (0, 1, 0, b),
+        (0, 0, 1, c),
+        (0, 0, 0, 1)
+    )
+
+draw_model(load_triangles(), get_matrix=get_matrix, translation_over_time=(2, 2, -3), translation_speed=0.6)
+
+
+```
+
+In the previous chapters, we used visual examples in 2D and 3D to motivate vector and matrix
+arithmetic. As we’ve gone along, we’ve put more emphasis on computation. At the end of this
+chapter, we calculated vector transformations in higher dimensions where we didn’t have any
+physical insight. This is one of the benefits of linear algebra: it gives you the tools to solve
+geometric problems that are too complicated to picture. We’ll survey the broad range of this
+application in the next chapter.  
+
+## 4: summary
+
+- A linear transformation is defined by what it does to standard basis vectors. When you
+  apply a linear transformation to the standard basis, the resulting vectors contain all the
+  data required to do the transformation. This means that only nine numbers are required
+  to specify a 3D linear transformation of any kind (the three coordinates of each of these
+  three resulting vectors). For a 2D linear transformation, four numbers are required.
+- In matrix notation, we represent a linear transformation by putting these numbers in a rectangular grid. By convention, you build a matrix by applying a transformation to the  standard basis vectors and putting the resulting coordinate vectors side by side as columns.
+- Using a matrix to evaluate the result of the linear transformation it represents on a given
+  vector is called multiplying the matrix by the vector. When you do this multiplication, the
+  vector is typically written as a column of its coordinates from top to bottom rather than
+  as a tuple.
+- Two square matrices can also be multiplied together. The resulting matrix represents the composition of the linear transformations of the original two matrices.
+- To calculate the product of two matrices, you take the dot products of the rows of the
+  first with the columns of the second. For instance, the dot product of row i of the first
+  matrix and column j of the second matrix gives you the value in row i and column j of
+  the product.
+- As square matrices represent linear transformations, non-square matrices represent
+  linear functions from vectors of one dimension to vectors of another dimension. That is,
+  these functions send vector sums to vector sums and scalar multiples to scalar multiples.
+- The dimension of a matrix tells you what kind of vectors its corresponding linear function
+  accepts and returns. A matrix with m rows and n columns is called an m-by-n matrix
+  (sometimes written mxn). It defines a linear function from n-dimensional space to mdimensional space.
+- Translation is not a linear function, but it can be made linear if you perform it in a higher
+  dimension. This observation allows us to do translations (simultaneously with other linear
+  transformations) by matrix multiplication.  
+
