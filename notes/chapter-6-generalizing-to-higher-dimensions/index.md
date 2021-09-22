@@ -311,7 +311,6 @@ If you ever find yourself testing whether a new kind of object can be thought of
   \vec{v} + \vec{w} = \vec{w} + \vec{v}
   $$
   
-
 - Adding vectors in any grouping shouldn’t matter
   $$
   \text{associative} \\
@@ -330,13 +329,11 @@ A good counterexample is adding strings by concatenation. In Python, you can do 
   s_1 * (s_2 * \vec{v}) = (s_1 * s_2) * \vec{v}
   $$
   
-
 - Multiplying a vector by 1 should leave it unchanged
   $$
   \vec{u} * 1 = \vec{u}
   $$
   
-
 - Addition of scalars should be compatible with scalar multiplication  
   $$
   \text{distributive} \\
@@ -698,3 +695,315 @@ Python has a de-facto standard image manipulation library, PIL, which is distrib
 While any ImageVector is valid, the minimum and maximum color values that render as visually different are 0 and 255, respectively. Because of this, the negative of any image you import will be black, having gone below the minimum brightness at every pixel. Likewise, positive scalar multiples quickly become washed out with most pixels exceeding the maximum displayable brightness. <img src="https://res.cloudinary.com/dri8yyakb/image/upload/v1632067282/24D8EEF0-E073-47F6-867E-6A78A62BE7B2_izvk6e.png"/>
 
 Vector arithmetic is clearly a general concept: the defining concepts of addition and scalar multiplication apply to numbers, coordinate vectors, functions, matrices, images, and many other kinds of objects. It’s striking to see such visual results when we apply the same math across unrelated domains. We’ll keep all of these examples of vector spaces in mind and continue to explore the generalizations we can make across them.  
+
+## 6.3 looking for smaller vector spaces
+
+
+
+The vector space of 300x300 color images has a whopping 270,000 dimensions, meaning we need to list as many numbers to specify any image of that size. This isn’t a problematic amount of data on its own, but when we have larger images, a large quantity of images, or thousands of images chained together to make a movie, the data can add up. 
+
+
+
+In this section, we look at how to start with a vector space and find smaller ones (having fewer dimensions) that retain most of the interesting data from the original space. With images, we can reduce the number of distinct pixels used in an image or convert it to black and white. The result may not be beautiful, but it can still be recognizable. For instance, the image on the right in figure 6.12 takes 900 numbers to specify, compared to the 270,000 numbers to specify the
+image on the left.  
+
+<img src="https://res.cloudinary.com/dri8yyakb/image/upload/v1632121592/5BC6285D-9884-4D2A-809C-4BCD849064CF_orrmxr.png"/>
+
+
+
+Pictures that look like the one on the right live in a 900-dimensional subspace of a 270,000- dimensional space. That means that they are still 270,000-dimensional image vectors, but they can be represented or stored with only 900 coordinates. This is a starting point for a study of compression. We won’t go too deep into the best practices of compression, but we will take a close look at subspaces of vector spaces.  
+
+### identifying subspaces
+
+vector subspace, or subspace for short, is just what it sounds like: a vector space that exists inside another vector space. One example we’ve looked at a few times already is the 2D x,y plane within 3D space as the plane where z = 0. To be specific, the subspace consists of vectors of the form (x, y, 0). These vectors have three components, so they are veritable 3D vectors, but they form a subset that happens to be constrained to lie on a plane. For that reason, we say this is a 2D subspace of `ℝ3`.
+
+NOTE: At the risk of being pedantic, the 2D vector space `ℝ2`, which consists of the ordered pairs (x, y), is not
+technically a subspace of 3D space `ℝ3`. That’s because vectors of the form (x, y) are not 3D vectors. However, it
+has a one-to-one correspondence with the set of vectors (x, y, 0), and vector arithmetic looks the same whether
+or not the extra zero z-coordinate is present. For these reasons, I consider it okay to call `ℝ2` a subspace of `ℝ3`.
+Not every subset of 3D vectors is a subspace. The plane where z = 0 is special because the vectors (x, y, 0) form a self-contained vector space. 
+
+There’s no way to build a linear combination of vectors in this plane that somehow “escapes” it; the third coordinate always remains zero. In math lingo, the precise way to say that a subspace is **self-contained** is to say *it is closed under linear combinations*.
+
+To get the feel for what a vector subspace looks like in general, let’s search for subsets of vector spaces that are also subspaces (figure 6.13). What subsets of vectors in the plane can make a standalone vector space? 
+
+
+
+> Can we just draw any region in the plane and only take vectors that live within it?  
+>
+> The answer is no: the subset in figure 6.13 contains some vectors that lie on the x-axis and some that live on the y-axis. These can respectively be scaled to give us the standard basis vectors e1 = (1, 0) and e2 = (0, 1). From these vectors, we can make linear combinations to get to any point in the plane, not only the ones in S (figure 6.14). 
+
+
+
+<img src="https://res.cloudinary.com/dri8yyakb/image/upload/v1632122013/6F2947C9-E625-4C9A-9F6D-73EAD392EB0F_qz1rju.png"/>
+
+
+
+> we can reach any point in R2 opposed to the previous example where we were contained to R2 within R3
+
+
+
+Instead of drawing a random subspace, let’s mimic the example of the plane in 3D. There is no z-coordinate, so let’s instead choose the points where y = 0. This leaves us with the points on the x-axis, having the form (x, 0). No matter how hard we try, we can’t find a linear combination of vectors of this form that have a non-zero y-coordinate (figure 6.15).  
+
+
+
+> here we do have a subspace because we are constrained within R1 in an R2 vector space
+
+<img src="https://res.cloudinary.com/dri8yyakb/image/upload/v1632122158/51DCBB25-BB58-49A1-908D-47DF773EC607_dk0lsx.png"/>
+
+This line, y = 0, is a vector subspace of `ℝ2`. As we originally found a 2D subspace of 3D, we also have found a 1D subspace of 2D. Instead of a 3D space or a 2D plane, a 1D vector space like this is called a line. In fact, we can identify this subspace as the real number line `ℝ`.  
+
+
+
+The next step could be to set x = 0 as well. Once we’ve set both x = 0 and y = 0 to zero, there’s only one point remaining: the zero vector. This is a vector subspace as well! No matter how you take linear combinations of the zero vector, the result is the zero vector. This is a zerodimensional subspace of the 1D line, the 2D plane, and the 3D space. Geometrically, a zerodimensional subspace is a point, and that point has to be zero. If it were some other point, v for instance, it would also contain 0 · v = 0 and an infinity of other different scalar multiples like 3 · v and -42 · v. Let’s run with this idea.  
+
+
+
+### starting with a single vector
+
+A vector subspace containing a non-zero vector v contains (at least) all of the scalar multiples of v. Geometrically, the set of all scalar multiples of a non-zero vector v lie on a line through the origin as shown in figure 6.16.
+
+<img src="https://res.cloudinary.com/dri8yyakb/image/upload/v1632122297/58FAFD5F-92F5-4D38-9C93-BFD3DB5C0CEB_vtggec.png"/>
+
+Each of these lines through the origin is a vector space. you can't escape any line by adding or scaling vectors that lie in it. the same goes for lines through the origin in 3D: they are all of the linear combinations of a single 3D vector, and they form a vector space. This is the first example of a general way of building subspaces: picking a vector and seeing all of the linear combinations that must come with it.  
+
+
+
+### spanning bigger space
+
+Given a set of one or more vectors, their **span** is defined as the set of all linear combinations. The important part of the span is that *it’s automatically a vector subspace*. 
+
+To rephrase what we just discovered, the span of a single vector v is a line through the origin. We denote a **set** of
+objects by including them in curly braces, so the set containing only v is `{v}`, and the span of this set could be written `span({v})`.
+
+As soon as we include another vector w, which is **not parallel** to v, the space gets bigger because we are no longer constrained to a single linear direction. The span of the set of two vectors `{v,w}` includes two lines, `span({v})` and `span({w})`, as well as linear combinations including both v and w, which lie on neither line (figure 6.17).  
+
+> once we have 2 non parallel vectors we can reach any point in the plane with a linear combination
+>
+> entire-plane = span({v,w})
+>
+> most strikingly for the standard basis vectors. Any point (x, y) can be reached as the linear combination 
+> $$
+> x · (1, 0) + y · (0, 1).
+> $$
+> 
+
+<img src="https://res.cloudinary.com/dri8yyakb/image/upload/v1632123135/092AB3E2-EDDC-42A0-ADEA-523A1ED4705B_p6onvz.png"/>
+
+A single non-zero vector spans a line in 2D or 3D, and it turns out, two non-parallel vectors can span either the whole 2D plane or a plane passing through the origin in 3D space. 
+
+
+
+<img src="https://res.cloudinary.com/dri8yyakb/image/upload/v1632123362/79F2929C-214F-47AE-955A-4A1B6EB41815_ockfz1.png"/>
+
+
+
+It’s slanted, so it doesn’t look like the plane where z = 0, and it doesn’t contain any of the three standard basis vectors. But it’s still a plane and a vector subspace of 3D space. One vector spans a 1D space, and two non-parallel vectors span a 2D space. If we add a third non-parallel vector to the mix, do the three vectors span a 3D space? Figure 6.20 shows that clearly the answer is no.  *because the keep living in 2d space and thus we can't adjust our 3th dimension*
+
+<img src="https://res.cloudinary.com/dri8yyakb/image/upload/v1632123467/4EFAB8AF-ED74-45B2-A7FE-4473D931371E_bg7ws7.png"/>
+
+
+
+No pair of the vectors u, v, and w is parallel, but these vectors don’t span a 3D space. They all live in the 2D plane, so no linear combination of them can magically obtain a z-coordinate. We need a better generalization of the concept of **“non-parallel” vectors**.  
+
+
+
+If we want to add a vector to a set and span a higher dimensional space, the new vector needs to point in a new direction that isn’t included in the span of the existing ones. In the plane, three vectors always have some redundancy. For instance, as shown in figure 6.21, a linear combination of u and w gives us v.  
+
+
+
+<img src="https://res.cloudinary.com/dri8yyakb/image/upload/v1632123582/50FA0259-22DA-413A-A3ED-05E42CF25C62_rlufti.png"/>
+
+
+
+The right generalization of **“non-parallel”** is **“linearly independent.”** 
+
+> A collection of vectors is **linearly dependent** if any of its members can be obtained as a linear combination of the others.
+
+Two parallel vectors are linearly dependent because they are scalar multiples of each other. Likewise, the set of three vectors `{u, v, w}` is linearly dependent because we can make v out of a linear combination of u and w (or w out of a linear combination of u and v, and so on).
+
+You should make sure to get a feel for this concept yourself. As one of the exercises at the end of this section, you can check that any of the three vectors (1, 0), (1, 1) and (-1, 1) can be written as a linear combination of the other two.
+
+
+$$
+\vec{a}=\begin{bmatrix}
+    1 \\
+    0
+\end{bmatrix}
+\\
+\vec{b}=\begin{bmatrix}
+    1 \\
+    1
+\end{bmatrix}
+\\
+\vec{c}=\begin{bmatrix}
+    -1 \\
+    1
+\end{bmatrix}
+\\
+\begin{bmatrix}
+    1 \\
+    0
+\end{bmatrix} = x\begin{bmatrix}
+    1 \\
+    1
+\end{bmatrix} + y\begin{bmatrix}
+    -1 \\
+    1
+\end{bmatrix}
+\\
+\vec{a} = \begin{bmatrix}
+    -1 \\
+    -1
+\end{bmatrix} \begin{bmatrix}
+    2 \\
+    2
+\end{bmatrix}
+$$
+
+By contrast, the `set {u,v}` is **linearly independent** because the components are non-parallel and cannot be scalar multiples of one another. This means that u and v span a bigger space than either on its own. Similarly, the **standard basis** `{e1, e2, e3}` for `ℝ3` is a **linearly independent** set. None of these vectors can be built as a linear combination of the other two, and all three are required to span 3D space. We’re starting to get at the properties of a vector space or subspace that indicate its dimension.  
+
+### defining the word dimensions
+
+Here’s a motivational question: is the following set of 3D vectors linearly independent? 
+
+`{(1, 1, 1), (2, 0, -3), (0, 0, 1), (-1, -2, 0)}`
+
+
+
+To answer this, you could draw these vectors in 3D or attempt to find a linear combination of three of them to get the fourth. But there’s an easier answer: only three vectors are needed to span all of 3D space, so any list of four 3D vectors has to have some redundancy. We know that a set with one or two 3D vectors will span a line or plane, respectively, rather than all of `ℝ3`. Three is the magic number of vectors that can both span a 3D space and still be
+linearly independent. That’s really why we call it three-dimensional: there are three independent directions after all.
+
+A linearly independent set of vectors that spans a whole vector space like `{e1, e2, e3}` for `ℝ3` is called a **basis**. Any basis for a space has the same number of vectors, and that number is its dimension. For instance, we saw (1, 0) and (1, 1) are linearly independent and span the whole plane, so they are a basis for the vector space `ℝ2`. Likewise (1, 0, 0) and (0, 1, 0) are linearly independent and span the plane where z = 0 in ℝ3. That makes them a basis for this 2D subspace, albeit not a basis for all of ℝ3.
+
+I have already used the word basis in the context of the “standard basis” for `ℝ2` and for `ℝ3`. These are called “**standard**” because they are such natural choices. It takes no computation to decompose a coordinate vector in the **standard basis**; the coordinates are the scalars in this decomposition. For instance, (3, 2) means the linear combination 
+$$
+3 * (1, 0) + 2 * (0, 1) \\ 3e1 + 2e2.
+$$
+
+In general, deciding whether vectors are linearly independent requires some work. Even if you know that a vector is a linear combination of some other vectors, finding that linear combination requires doing some algebra. In the next chapter, we cover how to do that; it ends up being a ubiquitous computational problem in linear algebra. But before that let’s get in some more practice identifying subspaces and measuring their dimensions.  
+
+> in the next chapter we will see how to find the right scalar to get a given coordinate using **standard vectors**
+
+### finding subspaces of the vector space of functions
+
+Mathematical functions from `ℝ` to `ℝ` contain an infinite amount of data, namely the output value when they are given any of infinitely many real numbers as inputs. That doesn’t mean that it takes infinite data to describe a function though. For instance, a linear function requires only two real numbers. They are the values of a and b in this general formula that you’ve probably seen: f(x) = ax + b
+
+where a and b can be any real number. This is much more tractable than the infinite-dimensional space of all functions. Any linear function can be specified by two real numbers, so it looks like the subspace of linear functions will be 2D. 
+
+CAUTION: I’ve used the word linear in a lot of new contexts in the last few chapters. Here, I’m returning to a meaning you used in high school algebra: a **linear function** is a function whose graph is a straight line. Unfortunately, functions of this form are not linear in the sense we spent all of chapter 4 discussing (linear transformations that preserve scalar multiplication and vector addition), and you can prove it yourself in an exercise. Because of this, I’ll try to be clear as to which sense of the word linear I’m using at any point.
+
+
+$$
+ f(x) = ax + b \\
+ s f(x) =  f(sx) \ ? \text{ no this is different}\\
+ f(x + y) =  f(x) + f(y) \ ? \text{ no this is different} 
+$$
+We can quickly implement a `LinearFunction` class inheriting from Vector. Instead of holding a function as its underlying data, it can hold two numbers for the coefficients a and b. We can add these functions by adding coefficients because:
+$$
+\text{proof that addition works}\\
+(ax + b) + (cx + d) = \\ 
+\text{commutative}\\ 
+(ax + cx) + (b + d) = \\
+\text{distributive}\\ 
+(a + c)x + (b + d)\\
+\\
+\text{proof that scaling works}\\
+\text{distributive}\\
+r(ax + b) = rax + rb \\
+\\
+\text{zero function}\\
+f(x) = 0 \ (a = b = 0)
+$$
+
+```python
+class LinearFunction(Vector):
+	def __init__(self,a,b):
+		self.a = a
+		self.b = b
+	def add(self,v):
+		return LinearFunction(self.a + v.a, self.b + v.b)
+	def scale(self,scalar):
+		return LinearFunction(scalar * self.a, scalar * self.b)
+	def __call__(self,x):
+		return self.a * x + self.b
+	@classmethod
+	def zero(cls):
+		return LinearFunction(0,0,0)
+```
+
+> We can prove to ourselves that linear functions form a vector subspace of dimension 2 by writing a **basis**. The basis vectors should both be **functions**, they should span the whole space of linear functions, and they should be **linearly independent** (*not multiples of one another* / *not scalar multiples of each other*). Such a set is `{x, 1}` or, more specifically, `{f(x) = x, g(x) = 1}`. Named this way, functions of the form `ax + b` can be written as a linear combination `a · f + b · g`.  
+
+This is as close as we can get to a **standard basis** for linear functions: `f(x) = x` and `f(x) = 1` are clearly different functions, not scalar multiples of one another. By contrast, `f(x) = x` and `h(x) = 4x` are scalar multiples of one another and would not be a linearly independent pair. But `{x, 1}` is not the only basis we could have chosen; `{4x + 1, x - 3}` is also a basis. 
+
+The same concept applies to **quadratic functions** having the form `f(x) = ax2 + bx + c`. These form a 3D subspace of the vector space of functions with one choice of basis being `{x2, x, 1}`. *Linear functions form a vector subspace of the space of quadratic functions where the `x2` component is zero*. Linear functions and quadratic functions are examples of **polynomial functions**, which are *linear combinations of powers of x*; for example, 
+$$
+f(x) = a0 + a1x + a2x2 + … + an
+$$
+xn Linear and quadratic functions have degree 1 and 2, respectively, because those are the highest powers of x that appear in each. The polynomial written in the previous equation has degree n and n + 1 coefficients in total. In the exercises, 
+
+> you’ll see that the space of polynomials of any degree forms another vector subspace of the space of functions (of a higher degree).  
+
+### subspace of images
+
+Because our ImageVector objects are represented by 270,000 numbers, we could follow the standard basis formula and construct a basis of 270,000 images, each with one of the 270,000 numbers equal to 1 and all others equal to 0. The listing shows what the first basis vector would look like.
+
+```
+// 1D subspace
+
+ImageVector([
+    (1,0,0), (0,0,0), (0,0,0), ..., (0,0,0), #<1>
+    (0,0,0), (0,0,0), (0,0,0), ..., (0,0,0), #<2>
+    ... #<3>
+])
+
+// This single vector spans a 1D subspace consisting of the images 
+// that are black except for a single, red pixel in the top left corner.
+// Scalar multiples of this image could have brighter or dimmer red pixels at this location
+```
+
+#1 Only the first pixel in the first row is non-zero: it has a red value of 1. All the other pixels have a value of (0,0,0).
+#2 The second row consists of 300 black pixels, each with a value (0,0,0).
+#3 I skipped the next 298 rows, but they are all identical to row 2; no pixels have any color values.
+
+to show more pixels, we need more basis vectors. There’s not too much to be learned from writing out these 270,000 basis vectors. Let’s instead look for a small set of vectors that span an interesting subspace. Here’s a single ImageVector consisting of dark gray pixels at every position:  
+
+```
+gray = ImageVector([
+(1,1,1), (1,1,1), (1,1,1), ..., (1,1,1),
+(1,1,1), (1,1,1), (1,1,1), ..., (1,1,1),
+...
+])
+```
+
+More concisely, we could write this instead: `gray = ImageVector([(1,1,1) for _ in range(0,300*300)])`. One way to picture the subspace spanned by the single vector gray is to look at some vectors that belong to it.
+
+<img src="https://res.cloudinary.com/dri8yyakb/image/upload/v1632241512/B0CB77C4-894B-4183-AC06-4DFCA2FE2696_k1kvcr.png"/>
+
+This collection of images is “one-dimensional” in the colloquial sense. There’s only one thing changing about them, their brightness. Another way we can look at this subspace is by thinking about the pixel values. In this subspace,
+any image has the same value at each pixel. For any given pixel, there is a 3D space of color possibilities measured by red, green, and blue coordinates. *Gray pixels form a 1D subspace of this*, containing points with all coordinates s * (1, 1, 1) for some scalar s 
+
+<img src="https://res.cloudinary.com/dri8yyakb/image/upload/v1632241888/E29B64DD-370A-4A99-A824-5EBF7D6CADD3_apq6rd.png"/>
+
+Each of the images in the basis would be black, except for one pixel that would be a very dim red, green, or blue. Changing one pixel at a time doesn’t yield striking results, so let’s look for smaller and more interesting subspaces. 
+
+There are many subspaces of images you can explore. You could look at solid color images of any color. These would be images of the form:  
+
+
+
+```
+ImageVector([
+(r,g,b), (r,g,b), (r,g,b), ..., (r,g,b),
+(r,g,b), (r,g,b), (r,g,b), ..., (r,g,b),
+...
+])
+```
+
+There are no constraints on the pixels themselves; the only constraint on a solid color image is that every pixel is the same. As a final example, you could consider a subspace consisting of low resolution, grayscale images like that shown in figure 6.25.  
+
+<img src="https://res.cloudinary.com/dri8yyakb/image/upload/v1632242215/88509503-8B7C-47DE-A3AD-8548E137C342_zdspgg.png"/>
+
+Each 10x10 pixel block has a constant gray value across its pixels, making it look like a 30x30 grid. There are only 30 · 30 = 900 numbers defining this image, so images like this one define a 900-dimensional subspace of the 270,000 dimensional space of images. It’s a lot less data, but it’s still possible to create recognizable images. One way to make an image in this subspace is to start with any image and average all red, green, and blue values in each 10x10 pixel block. This average gives you the brightness b, and you can set all pixels in the block to (b, b, b) to build your new image. This turns out to be a linear map (figure 6.26), and you can implement it later as a mini-project.  
+
+
+

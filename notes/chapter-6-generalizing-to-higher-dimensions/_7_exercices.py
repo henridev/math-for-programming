@@ -1,4 +1,6 @@
 from abc import ABCMeta, abstractmethod, abstractclassmethod, abstractproperty
+
+from PIL import Image
 from vector import Vector
 from math import *
 from plot import plot, plot2
@@ -423,3 +425,118 @@ print(multiply_5_by_3_with_vec3(Matrix5_by_3((
 )),
     Vec3(1, 2, 3)
 ))
+
+
+'''
+Exercise 6.20: Convince yourself that the zero vector for the ImageVector class doesn’t 
+visibly alter any image when it is added.
+'''
+
+image = ImageVector('cruise.jpg')
+image_zero_added = image.add(image.zero())
+# image_zero_added.image().show()
+
+'''
+Exercise 6.21: Pick two images and display 10 different weighted averages of them.
+These will be points on a line segment connecting the images in 270,000-dimensional space!
+'''
+
+repetitions = 10
+image_1 = ImageVector('cartman-smart.jpg')
+image_2 = ImageVector('cartman.jpg')
+new_size = (image_1.size[0]*repetitions, image_1.size[1])
+
+appended_image = Image.new("RGB", new_size)
+fractions = [enumerator/repetitions for enumerator in range(repetitions)]
+weighted_images = [image_1.scale(fraction).add(image_2.scale(1-fraction)) for fraction in fractions]
+
+x_offset = 0
+for im in weighted_images:
+    appended_image.paste(im.image(), (x_offset, 0))
+    x_offset += im.size[0]
+
+# appended_image.save('test.jpg')
+
+
+'''
+Exercise 6.22: Adapt the vector space unit tests to images and run them. 
+What do your randomized unit tests look like as images?
+
+we will just get some noise screen
+'''
+
+# @st.composite
+# def random_image(_):
+#     fixed_length_list = st.lists(st.integers(), min_size=270000, max_size=270000)
+#     return ImageVector(fixed_length_list)
+
+
+# @given(
+#     random_image(), random_image()
+# )
+# def commutative_vectors(u, v):
+#     result = u + v == v + u
+#     note(f"Result: {result}")
+#     assert result == True
+
+# @given(
+#     random_image(), random_image(), random_image()
+# )
+# def associative_vectors(u, v, w):
+#     result = (u + v) + w == u + (v + w)
+#     note(f"Result: {result}")
+#     assert result == True
+
+# @given(
+#     random_image(), st.integers(), st.integers()
+# )
+# def multiply_several_scalars_multiply_all_scalars(v, scalar_1, scalar_2):
+#     result = scalar_1 * (scalar_2 * v) == (scalar_1 * scalar_2) * v
+#     note(f"Result: {result}")
+#     assert result == True
+
+# @given(
+#     random_image()
+# )
+# def multiply_one_unchanged(v):
+#     result = v == v * 1
+#     note(f"Result: {result}")
+#     assert result == True
+
+# @given(
+#     random_image(), st.integers(), st.integers()
+# )
+# def test_addition_scalars_compatible_scalar_multiplication(v, scalar_1, scalar_2):
+#     result = scalar_1 * v + scalar_2 * v == (scalar_1 + scalar_2) * v
+#     note(f"Result: {result}")
+#     assert result == True
+
+# @given(
+#     random_image(), random_image(), st.integers()
+# )
+# def test_addition_vectors_compatible_scalar_multiplication(u, v, scalar):
+#     result = scalar * (u + v) == scalar * v + scalar * u
+#     note(f"Result: {result}")
+#     result.image().show()
+#     assert result == True
+
+
+# try:
+#     commutative_vectors()
+#     associative_vectors()
+#     multiply_several_scalars_multiply_all_scalars()
+#     multiply_one_unchanged()
+#     test_addition_scalars_compatible_scalar_multiplication()
+# except AssertionError:
+#     print("result != True")
+
+
+def random_image():
+    img = []
+    for _ in range(0, 300*300):
+        img.append((randint(0, 255), randint(0, 255), randint(0, 255)))
+    print(img)
+    return ImageVector(img)
+
+
+# random_image().image().show()
