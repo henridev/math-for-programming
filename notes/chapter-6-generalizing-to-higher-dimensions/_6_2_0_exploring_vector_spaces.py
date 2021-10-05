@@ -1,42 +1,52 @@
+from datetime import datetime
+from _6_1_generalizing_vectors import Vector
 from pathlib import Path
 from json import loads, dumps
-from datetime import datetime
-from abc import ABCMeta, abstractmethod, abstractclassmethod, abstractproperty
 import pprint
 
 pp = pprint.PrettyPrinter(indent=2)
 
-class Vector(metaclass=ABCMeta):
-    @abstractmethod
-    def scale(self, scalar):
-        pass
+class Vec1(Vector):
+    def __init__(self, x):
+        self.x = x
 
-    @abstractmethod
     def add(self, other):
+        return Vec1(self.x + other.x)
+
+    def scale(self, scalar):
+        return Vec1(scalar * self.x)
+
+    @classmethod
+    def zero(cls):
+        return Vec1(0)
+
+    def __eq__(self, other):
+        return self.x == other.x
+
+    def __repr__(self):
+        return "Vec1({})".format(self.x)
+
+
+class Vec0(Vector):
+    def __init__(self):
         pass
 
-    @abstractclassmethod
-    @abstractproperty
-    def zero(self):
-        pass
+    def add(self, other):
+        return Vec0()
 
-    def negation_vector(self):
-        return self.scale(-1)
+    def scale(self, scalar):
+        return Vec0()
 
-    def subtract(self, other):
-        return self.add(other.scale(-1))
+    @classmethod
+    def zero(cls):
+        return Vec0()
 
-    def __mul__(self, scalar):
-        return self.scale(scalar)
+    def __eq__(self, other):
+        return self.__class__ == other.__class__ == Vec0
 
-    def __rmul__(self, scalar):
-        return self.scale(scalar)
+    def __repr__(self):
+        return "Vec0()"
 
-    def __add__(self, other):
-        return self.add(other)
-
-    def __sub__(self, other):
-        return self.subtract(other)
 
 class CarForSale(Vector):
     retrieved_date = datetime(2018, 11, 30, 12)  # 1 I retrieved the data set from CarGraph.com on 11/30/2018 at noon.
@@ -83,12 +93,12 @@ class CarForSale(Vector):
             scale_date(self.posted_datetime)
         )
 
-    def zero():
+    @classmethod
+    def zero(cls):
         return CarForSale(0, 0, 0, CarForSale.retrieved_date)
 
 
 # load cargraph data from json file
-
 contents = Path('notes/chapter-6-generalizing-to-higher-dimensions/cargraph.json').read_text()
 cg = loads(contents)
 cleaned = []
@@ -115,43 +125,8 @@ pp.pprint((cars[0] + cars[1]).__dict__)
 pp.pprint(average_prius.__dict__)
 
 
-class Vector(metaclass=ABCMeta):
-    @abstractmethod
-    def scale(self, scalar):
-        pass
-
-    @abstractmethod
-    def add(self, other):
-        pass
-
-    @abstractclassmethod
-    @abstractproperty
-    def zero_vector(self):
-        pass
-
-    def negation_vector(self):
-        return self.scale(-1)
-
-    def subtract(self, other):
-        return self.add(other.scale(-1))
-
-    def __mul__(self, scalar):
-        return self.scale(scalar)
-
-    def __rmul__(self, scalar):
-        return self.scale(scalar)
-
-    def __add__(self, other):
-        return self.add(other)
-
-    def __sub__(self, other):
-        return self.subtract(other)
-
-
 class Function(Vector):
-    def __init__(
-            self, f
-    ):
+    def __init__(self, f):
         self.f = f
 
     def add(self, other):
@@ -164,17 +139,81 @@ class Function(Vector):
             return self.f(x) * scalar
         return Function(new_function)
 
-    def zero():
+    @classmethod
+    def zero(cls):
         return Function(lambda x: 0)
 
     def __call__(self, x):
         return self.f(x)
 
 
-new_function = 3 * Function(lambda x: x * 3)
+'''
+f = 3 * Function(lambda x: x * 3)
+print(f(2))
+g = Function(lambda x: x / 2)
+combo = 2 * f - 6 * g
+print(combo(2))
+(f + g)(6)
+'''
 
-print(new_function(2))
 
-new_function = 2 * Function(lambda x: x * 3) - 6 * Function(lambda x: x / 2)
+class Matrix5_by_3(Vector):
+    # 1 You need to know the number of rows and columns to be able to construct the zero matrix
+    rows = 5
+    columns = 3
 
-print(new_function(2))
+    def __init__(self, matrix):
+        self.matrix = matrix
+
+    def add(self, other):
+        return Matrix5_by_3(tuple(
+            tuple(a + b for a, b in zip(row1, row2))
+            for (row1, row2) in zip(self.matrix, other.matrix)
+        ))
+
+    def scale(self, scalar):
+        return Matrix5_by_3(
+            tuple(
+                tuple(scalar * x for x in row)
+                for row in self.matrix
+            )
+        )
+
+    @classmethod
+    def zero(cls):
+        # 2  The zero vector for 5×3 matrices is a 5×3 matrix consisting of all zeroes. Adding this to any other 5×3 matrix M returns M.
+        return Matrix5_by_3(
+            tuple(
+                tuple(0 for j in range(0, cls.columns))
+                for i in range(0, cls.rows)
+            )
+        )
+
+class Matrix(Vector):
+    def __init__(self, matrix):
+        self.matrix = matrix
+        self.rows = len(matrix)
+        self.columns = len(matrix[0])
+
+    def add(self, other):
+        return Matrix(tuple(
+            tuple(a + b for a, b in zip(row1, row2))
+            for (row1, row2) in zip(self.matrix, other.matrix)
+        ))
+
+    def scale(self, scalar):
+        return Matrix(
+            tuple(
+                tuple(scalar * x for x in row)
+                for row in self.matrix
+            )
+        )
+
+    @classmethod
+    def zero(self):
+        return Matrix(
+            tuple(
+                tuple(0 for j in range(0, self.columns))
+                for i in range(0, self.rows)
+            )
+        )

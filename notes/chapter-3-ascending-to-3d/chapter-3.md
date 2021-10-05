@@ -84,7 +84,7 @@ v_2
 = \cos{(\theta)} * |\vec{v}| * |\vec{u}| \\ 
 \\
 \text{hoek tussen 2 vectoren gebasseerd op 2 vector coordinaten} \\
- \theta=\arccos{(\frac{(u \cdot v)}{(|\vec{v}| * |\vec{u}|)})} 
+ \theta=\arccos{(\frac{(u \cdot v)}{(|\vec{v}| * |\vec{u}|)})}
 $$
 
 - cross product 

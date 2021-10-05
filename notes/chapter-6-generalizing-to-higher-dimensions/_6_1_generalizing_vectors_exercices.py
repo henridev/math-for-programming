@@ -1,42 +1,26 @@
+
 from abc import ABCMeta, abstractmethod, abstractproperty
 from hypothesis import given, note, strategies as st
-
+from _6_1_generalizing_vectors import Vector
+from vectors import add, scale
 
 '''
 Exercise 6.1: Implement a Vec3 class inheriting from Vector.
+
+Exercise 6.3: Add a zero abstract method to the Vector class to 
+return the zero vector in a given vector space, as well as an 
+implementation for the negation operator. 
+These are useful because we’re required to have a zero vector and
+negations of any vector in a vector space.
+
+Exercise 6.6: As equality is implemented for Vec2 and Vec3,
+it turns out that Vec2(1,2) == Vec3(1,2,3) returns True.
+Python’s duck typing is too forgiving for its own good!
+Fix this by adding a check that classes must match before
+testing vector equality.
+
 '''
 
-class Vector(metaclass=ABCMeta):
-    @abstractmethod
-    def scale(self, scalar):
-        pass
-
-    @abstractmethod
-    def add(self, other):
-        pass
-
-    @abstractmethod
-    def subtract(self, other):
-        pass
-
-    @abstractproperty
-    def zero_vector(self):
-        pass
-
-    def negation_vector(self):
-        return self.scale(-1)
-
-    def __mul__(self, scalar):
-        return self.scale(scalar)
-
-    def __rmul__(self, scalar):
-        return self.scale(scalar)
-
-    def __add__(self, other):
-        return self.add(other)
-
-    def __sub__(self, other):
-        return self.subtract(other)
 
 class Vec3(Vector):
     def __init__(self, x, y, z):
@@ -45,6 +29,7 @@ class Vec3(Vector):
         self.z = z
 
     def add(self, v):
+        assert self.__class__ and v.__class__
         return Vec3(self.x + v.x, self.y + v.y, self.z + v.z)
 
     def subtract(self, v):
@@ -53,11 +38,11 @@ class Vec3(Vector):
     def scale(self, s):
         return Vec3(self.x * s, self.y * s, self.z * s)
 
-    def zero_vector(self):
+    def zero(self):
         return Vec3(0, 0, 0)
 
-    def __eq__(self, other):
-        return self.x == other.x and self.y == other.y and self.z == other.z
+    def __eq__(self, v):
+        return (self.__class__ and v.__class__) and self.x == v.x and self.y == v.y and self.z == v.z
 
     def __repr__(self):
         return "Vec3({},{},{})".format(self.x, self.y, self.z)
@@ -71,11 +56,6 @@ Inheriting from CoordinateVector and setting the dimension to 6
 should be all you need to do to implement a Vec6 class.
 '''
 
-def add(*vectors):
-    return tuple(map(sum, zip(*vectors)))
-
-def scale(scalar, v):
-    return tuple(scalar * coord for coord in v)
 
 class CoordinateVector(Vector):
     @abstractproperty
@@ -94,7 +74,7 @@ class CoordinateVector(Vector):
     def scale(self, s):
         return self.__class__(*scale(s, self.coords))
 
-    def zero_vector(self):
+    def zero(self):
         return Vec3(0, 0, 0)
 
     def negation_vector(self):
@@ -114,77 +94,9 @@ class Vec6(CoordinateVector):
         return 6
 
 
+'''
 print(Vec6(1, 2, 3, 4, 5, 6) + Vec6(1, 2, 3, 4, 5, 6))
-# print(Vec6(1, 2, 3, 4, 5, 6) == Vec6(1, 2, 3, 4, 5, 6))
-
-
 '''
-Exercise 6.3: Add a zero abstract method to the Vector class to 
-return the zero vector in a given vector space, as well as an 
-implementation for the negation operator. 
-These are useful because we’re required to have a zero vector and
-negations of any vector in a vector space.
-'''
-
-class Vector(metaclass=ABCMeta):
-    @abstractmethod
-    def scale(self, scalar):
-        pass
-
-    @abstractmethod
-    def add(self, other):
-        pass
-
-    @abstractmethod
-    def subtract(self, other):
-        pass
-
-    @abstractproperty
-    def zero_vector(self):
-        pass
-
-    def negation_vector(self):
-        return self.scale(-1)
-
-    def __mul__(self, scalar):
-        return self.scale(scalar)
-
-    def __rmul__(self, scalar):
-        return self.scale(scalar)
-
-    def __add__(self, other):
-        return self.add(other)
-
-    def __sub__(self, other):
-        return self.subtract(other)
-
-    def __truediv__(self, scalar):
-        return self.scale(1.0/scalar)
-
-class Vec3(Vector):
-    def __init__(self, x, y, z):
-        self.x = x
-        self.y = y
-        self.z = z
-
-    def add(self, v):
-        return Vec3(self.x + v.x, self.y + v.y, self.z + v.z)
-
-    def subtract(self, v):
-        return self.add(v * -1)
-
-    def scale(self, s):
-        return Vec3(self.x * s, self.y * s, self.z * s)
-
-    def zero_vector(self):
-        return Vec3(0, 0, 0)
-
-    def __eq__(self, other):
-        return self.x == other.x and self.y == other.y and self.z == other.z
-
-    def __repr__(self):
-        return "Vec3({},{},{})".format(self.x, self.y, self.z)
-
 
 '''
 Exercise 6.4: Write unit tests to show that the addition and scalar multiplication 
@@ -260,8 +172,7 @@ try:
 except AssertionError:
     print("result != True")
 
-
-'''
+''''
 Exercise 6.5: Add unit tests to check that 
 0 + v = v, 
 0 · v = 0, 
@@ -306,23 +217,6 @@ try:
     test_addition_scalars_compatible_scalar_multiplication()
 except AssertionError:
     print("result != True")
-
-
-'''
-Exercise 6.6: As equality is implemented for Vec2 and Vec3,
-it turns out that Vec2(1,2) == Vec3(1,2,3) returns True.
-Python’s duck typing is too forgiving for its own good!
-Fix this by adding a check that classes must match before
-testing vector equality.
-
-def __eq__(self, other):
-    return (self.__class__ and other.__class__) and (self.x == other.x and self.y == other.y and self.z == other.z)
-
-def add(self, other):
-    assert self.__class__ and other.__class__
-    return Vec2(self.x + other.x, self.y + other.y)
-'''
-
 
 '''
 Exercise 6.7: Implement a __truediv__ function on Vector that allows you to divide vectors by scalars. You can

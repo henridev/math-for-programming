@@ -1,19 +1,17 @@
 from abc import ABCMeta, abstractmethod, abstractclassmethod, abstractproperty
-
 from PIL import Image
 from vector import Vector
 from math import *
 from plot import plot, plot2
 from datetime import timedelta, datetime
 from hypothesis import given, note, strategies as st
-from image_vector import ImageVector
+from _6_2_5_manipulating_images import ImageVector
 from car_for_sale import CarForSale
 from math import isclose
 from random import uniform, random, randint
 
 # result = 0.5 * ImageVector("clinton.JPG") + 0.5 * ImageVector("cruise.JPG")
 # result.image().show()
-
 
 white = ImageVector([(255, 255, 255) for _ in range(0, 300*300)])
 inverse = white - ImageVector("clinton.jpg")

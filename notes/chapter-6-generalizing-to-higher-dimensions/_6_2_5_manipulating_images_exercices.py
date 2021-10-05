@@ -1,7 +1,7 @@
 import pprint
-from vector import Vector
+from _6_1_generalizing_vectors import Vector
+from utils import average_of_tuple_lists, averaged_tuple_lists
 from math import *
-from utils import average_of_tuple_lists
 from PIL import Image
 
 pp = pprint.PrettyPrinter(indent=2)
@@ -14,7 +14,6 @@ class ImageVector(Vector):
             # The constructor accepts the name of an image file.
             # We create an Image object with PIL, resize it to 300x300, and then extract its list of pixels with the getdata() method.
             # Each pixel is a triple consisting of red, green, and blue values.
-            # print(">>>>>>>>", input)
             img = Image.open(input).resize(ImageVector.size)
             self.pixels = img.getdata()
         except:
@@ -23,10 +22,11 @@ class ImageVector(Vector):
 
     def image(self):
         '''
-        This method returns the underlying PIL image, reconstructed from the pixels stored as an attribute on the class.
+        This method returns the underlying PIL image,
+        reconstructed from the pixels stored as an attribute on the class.
         The values must be converted to integers to create a displayable image.
         '''
-        img = Image.new('RGB', ImageVector.size)  # 4
+        img = Image.new('RGB', ImageVector.size)
         img.putdata([(int(r), int(g), int(b)) for (r, g, b) in self.pixels])
         return img
 
@@ -86,9 +86,13 @@ class ImageVector(Vector):
 
         return ImageVector(new_image)
 
+    def gray_scaled_image(self, light=1):
+        return ImageVector(averaged_tuple_lists(self.pixels)).scale(light)
+
     def add(self, img2):
         '''
-        performs vector addition for images by adding the respective red, green, and blue values for each pixel
+        performs vector addition for images by adding the respective red, green, and blue
+        values for each pixel
         '''
         return ImageVector(
             [
@@ -100,7 +104,8 @@ class ImageVector(Vector):
 
     def scale(self, scalar):
         '''
-        Performs scalar multiplication by multiplying every red, green, and blue value for every pixel by the given scalar
+        Performs scalar multiplication by multiplying every red, green, and blue
+        value for every pixel by the given scalar
         '''
         return ImageVector(
             [(scalar*r, scalar*g, scalar*b) for (r, g, b) in self.pixels]
@@ -116,7 +121,9 @@ class ImageVector(Vector):
 
     def _repr_png_(self):  # 8
         '''
-        Jupyter notebooks can display PIL images inline, as long as we pass the implementation of the function _repr_png_ from the underlying image.
+        Jupyter notebooks can display PIL images inline, 
+        as long as we pass the implementation of the function 
+        _repr_png_ from the underlying image.
         '''
         return self.image()._repr_png_()
 

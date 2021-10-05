@@ -1,22 +1,22 @@
 # 6: generalizing to higher dimensions
 
-Even if you’re not interested in animating teapots, the machinery of vectors, linear transformations, and matrices can still be useful. In fact, these concepts are so useful there’s an entire branch of math devoted to them: linear algebra. 
+Even if you’re not interested in animating teapots, the machinery of vectors, **linear transformations**, and **matrices** can still be useful. In fact, these concepts are so useful there’s an entire branch of math devoted to them: **linear algebra**. 
 
-Linear algebra generalizes everything we know about 2D and 3D geometry to study data in any number of dimensions. As a programmer, you’re probably skilled at generalizing ideas. When writing complex software, it’s common to find yourself writing similar code over and over.
+Linear algebra generalizes everything we know about 2D and 3D geometry to *study data in any number of dimensions*. As a programmer, you’re probably skilled at generalizing ideas. When writing complex software, it’s common to find yourself writing similar code over and over.
 
 At some point, you catch yourself doing this, and you consolidate the code into one class or function capable of handling all of the cases you see. This saves you typing and often improves code organization and maintainability. 
 
 Mathematicians follow the same process: after encountering similar patterns over and over, they can better state exactly what they see and refine their definitions.
 
-In this chapter, we use this kind of logic to define vector spaces. **Vector spaces** are collections
-of objects we can treat like vectors. These can be arrows in the plane, tuples of numbers, or
-objects completely different from the ones we’ve seen so far. For instance, you can treat images
-as vectors and take a linear combination of them (figure 6.1).  
+In this chapter, we use this kind of logic to define vector spaces.
 
-The key operations in a vector space are **vector addition** and **scalar multiplication**. With these,
-you can make linear combinations (including negation, subtraction, weighted averages, and so
-on), and you can reason about which transformations are linear. It turns out these operations
-help us make sense of the word dimension. For instance, we’ll see that the images used in the figure are 270,000-dimensional objects! We’ll cover higher-dimensional and even infinite dimensional spaces soon enough, but let’s start by reviewing the 2D and 3D spaces we already know.  
+> **Vector spaces** are collections of objects we can treat like vectors. These can be arrows in the plane, tuples of numbers, or objects completely different from the ones we’ve seen so far. 
+
+For instance, images as vectors => you can take a linear combination of them (figure 6.1). 
+
+The key operations (**vector addition** & **scalar multiplication**) in a vector space can make **linear combinations** (including negation, subtraction, weighted averages, and so on)
+
+It turns out these operations help us make sense of the word dimension. For instance, we’ll see that the images used in the figure are 270,000-dimensional objects! We’ll cover higher-dimensional and even infinite dimensional spaces soon enough, but let’s start by reviewing the 2D and 3D spaces we already know.  
 
 
 
@@ -24,23 +24,19 @@ help us make sense of the word dimension. For instance, we’ll see that the ima
 
 ## 6.1 generalizing our definition of vectors
 
-Python supports **object-oriented programming (OOP),** which is a great framework for
-generalization. Specifically, Python classes support **inheritance**: you can create new classes of
-objects that inherit properties and behaviours of an existing parent class. In our case, we want
-to realize the 2D and 3D vectors we’ve already seen as instances of a more general class of
-objects simply called **vectors**. Then any other objects that inherit behaviours from the parent
-class can rightly be called vectors as well.  
+Python 
+
+- supports **object-oriented programming (OOP)** => framework for generalization.
+- classes support **inheritance**: you can create new classes of objects that inherit properties and behaviours of an existing parent class. 
+  - In our case, we want to realize the 2D and 3D vectors we’ve already seen as instances of a more general class of objects simply called **vectors**. Then any other objects that inherit behaviours from the parent class can rightly be called vectors as well.  
 
 <img src="https://res.cloudinary.com/dri8yyakb/image/upload/v1632034905/B000F4C9-05C1-4948-808C-ABFFAAF19968_dnjiyx.png"/>
 
 ### creating a class for 2d coordinate vectors.
 
-In code, our 2D and 3D vectors have been coordinate vectors, meaning that they were defined
-as tuples of numbers, which are their coordinates. (We also saw that vector arithmetic can be
-defined geometrically in terms of arrows, but we can’t translate that approach directly into
-Python code.) For 2D coordinate vectors, the data is the ordered pair of the x- and y-coordinates.
-A tuple is a great way to store this data, but we can equivalently use a class. We’ll call the class
-representing 2D coordinate vectors Vec2:  
+In code, our 2D and 3D vectors have been **coordinate vectors**, meaning that they were defined as tuples of numbers, which are their coordinates. (We also saw that vector arithmetic can be defined geometrically in terms of arrows, but we can’t translate that approach directly into Python code.) For 2D coordinate vectors, the data is the ordered pair of the x- and y-coordinates. A tuple is a great way to store this data, but we can equivalently use a class. We’ll call the class representing 2D coordinate vectors Vec2. 
+
+> one of the most interesting features in python is **operator overloading** which is a feature we will use extensively for or vector classes
 
 ```python
 class Vec2():
@@ -55,92 +51,19 @@ class Vec2():
         return Vec2(self.x * s, self.y * s)
 
     def __eq__(self, other):
-        '''
-        vectors are equal when their coordinates are equal
-        '''
         return self.x == other.x and self.y == other.y
 
     def __mul__(self, num):
-        '''
-        overrride * operator
-        '''
         return self.scale(num)
 
     def __rmul__(self, num):
-        '''
-        overrride * operator
-        '''
         return self.scale(num)
 
     def __add__(self, v):
-        '''
-        overrride + operator
-        '''
         return self.add(v)
 
     def __repr__(self):
-        '''
-        overrid memory address returned as representation
-        '''
         return "Vec2({},{})".format(self.x, self.y)
-
-
-v1 = Vec2(1, 2)
-v2 = Vec2(2, 1)
-v3 = v1.add(v2)
-
-
-print(v1 * 3 + v2 * 2)
-# class Vec2():
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
-
-    def add(self, v):
-        return Vec2(self.x + v.x, self.y + v.y)
-
-    def scale(self, s):
-        return Vec2(self.x * s, self.y * s)
-
-    def __eq__(self, other):
-        '''
-        vectors are equal when their coordinates are equal
-        '''
-        return self.x == other.x and self.y == other.y
-
-    def __mul__(self, num):
-        '''
-        overrride * operator
-        '''
-        return self.scale(num)
-
-    def __rmul__(self, num):
-        '''
-        overrride * operator
-        '''
-        return self.scale(num)
-
-    def __add__(self, v):
-        '''
-        overrride + operator
-        '''
-        return self.add(v)
-
-    def __repr__(self):
-        '''
-        overrid memory address returned as representation
-        '''
-        return "Vec2({},{})".format(self.x, self.y)
-
-
-v1 = Vec2(1, 2)
-v2 = Vec2(2, 1)
-v3 = v1.add(v2)
-
-
-print(v1 * 3 + v2 * 2)
-# Vec2(7,8)
-    
 ```
 
 ### repeating the process with 3d vectors
@@ -178,9 +101,7 @@ This Vec3 class puts us in a good place to think about generalization. There are
 
 We could, for example, focus on simplifying the arithmetic. Instead of implementing add differently for Vec2 and Vec3; they can both use the add function we built in chapter 3, which already handles coordinate vectors of any size. We could also store coordinates  
 
-internally as a tuple or list, letting the constructor accept any number of coordinates and create
-a 2D, 3D, or other coordinate vector. I’ll leave these possibilities as exercises for you, however,
-and take us in a different direction.
+internally as a tuple or list, letting the constructor accept any number of coordinates and create a 2D, 3D, or other coordinate vector. I’ll leave these possibilities as exercises for you.
 
 ```python
 class Vec():
@@ -212,7 +133,7 @@ class Vec():
         return "Vec{}".format(self.coords)
 ```
 
-The generalization I want to focus on is based on how we use the vectors, not on how they work. This gets us to a mental model that both organizes the code well and aligns with the mathematical definition of a vector. For instance, we can write a generic average function that can be used on any kind of vector:  
+However, The generalization we want to focus on is based on how we use the vectors, not on how they work. This gets us to a mental model that both organizes the code well and aligns with the mathematical definition of a vector. For instance, we can write a generic average function that can be used on any kind of vector:  
 
 ```python
 def average(v1,v2):
@@ -223,48 +144,62 @@ We can insert either 3D vectors or 2D vectors. for instance, `average(Vec2(9.0, 
 
 > As a spoiler, we will soon be able to average pictures together as well. Once we’ve implemented a suitable class for images, we’ll be able to write average(img1, img2) and get a new image back.
 
-- beauty and the economy that comes with generalization. => single, generic function and use it for a wide variety of types of inputs. 
-  - only constraint on the input is that it needs to support multiplication by scalars and addition with one another. 
-  - The implementation of arithmetic varies between Vec2 objects, Vec3 objects, images,
-    or other kinds of data, but there’s always an important overlap in what arithmetic we can do
-    with them. 
-  - When we separate the what from the how, we open the door for code reuse and far reaching mathematical statements.
+beauty and the economy that comes with **generalization**. => single, generic function and use it for a wide variety of types of inputs. 
+- only constraint on the input is that it needs to support **multiplication by scalars** and **addition with one another**. 
+- The implementation of arithmetic varies between Vec2 objects, Vec3 objects, images,or other kinds of data, but there’s always an important overlap in what arithmetic we can do with them. 
+- When we separate the what from the how (c*ode to an interface instead of an implementation*), we open the door for code reuse and far reaching mathematical statements.
 
-How can we best describe what we can do with vectors separately from the details of how we carry them out? We can capture this in Python using an **abstract base class.**  
+We can capture this in Python using an **abstract base class** which helps us in describing what a vector should do but not how it is implemented.
 
 ### building a vector base class
 
-The basic things we can do with Vec2 or Vec3 include constructing a new instance, adding with other vectors, multiplying by a scalar, testing equality with another vector, and representing an instance as a string. Of these, only addition and scalar multiplication are distinctive vector operations. Any new Python class automatically includes the rest. This prompts a definition of a Vector base class:  
+The basic things we can do with Vec2 or Vec3 include
+
+- constructing a new instance
+- adding with other vectors
+- multiplying by a scalar
+- testing equality with another vector
+- representing an instance as a string. 
+
+Of these, only **addition** and **scalar multiplication** are distinctive vector operations. Any new Python class automatically includes the rest. This prompts a definition of a Vector base class:  
+
+- we will create a Vector class which is an **abstract base class** = a class that is not intended to be instantiated. Instead, it’s designed to be used as a template for classes that inherit from it. 
+- for operator overloading we can already include the implementation in the vector base class
+- using the abstract base class we can now simplify Vec2 and Vec3 
 
 ```python
-from abc import ABCMeta, abstractmethod
-'''
-contains helper classes, functions, and method decorators that help define an abstract base class = a class that is not intended to be instantiated. Instead, it’s designed to be used as a template for classes that inherit from it. 
-'''
-
 class Vector(metaclass=ABCMeta):
-    # a method is not implemented in the base class and needs to be implemented for any child class.
-    @abstractmethod 
-    def scale(self,scalar):
-        pass
     @abstractmethod
-    def add(self,other):
+    def scale(self, scalar):
         pass
-    
-    # It is also useful to have this base class because we can equip it with 
-    # all the methods that depend only on addition and scalar multiplication
-    # In contrast to the abstract methods scale and add, 
-    # these implementations are automatically available to any child class. 
+
+    @abstractmethod
+    def add(self, other):
+        pass
+
+    @abstractmethod
+    def subtract(self, other):
+        pass
+
+    @abstractproperty
+    @classmethod
+    def zero(self):
+        pass
+
+    @abstractmethod
+    def negation_vector(self):
+        pass
+
     def __mul__(self, scalar):
-		return self.scale(scalar)
-	def __rmul__(self, scalar):
-		return self.scale(scalar)
-	def __add__(self,other):
-		return self.add(other)
+        return self.scale(scalar)
+    def __rmul__(self, scalar):
+        return self.scale(scalar)
+    def __add__(self, other):
+        return self.add(other)
     def __sub__(self, other):
         return self.subtract(other)
 
-# We can simplify Vec2 and Vec3 to inherit from Vector. 
+
 class Vec2(Vector):
     def __init__(self, x, y):
         self.x = x
@@ -272,12 +207,18 @@ class Vec2(Vector):
 
     def add(self, v):
         return Vec2(self.x + v.x, self.y + v.y)
-    
+
     def subtract(self, v):
         return self.add(v * -1)
 
     def scale(self, s):
         return Vec2(self.x * s, self.y * s)
+
+    def zero(self):
+        return Vec2(0, 0)
+
+    def negation_vector(self):
+        return self.scale(-1)
 
     def __eq__(self, other):
         return self.x == other.x and self.y == other.y
@@ -291,9 +232,7 @@ This abstract class makes it easier to implement general vector operations, and 
 
 ### defining vector spaces
 
-In math, a vector is defined by what it does rather than what it is, much like how we defined the abstract Vector class. 
-
-Here’s a first (incomplete) definition of a vector.
+In math, a vector is defined by what it does rather than what it is, much like how we defined the abstract Vector class. Here’s a first (incomplete) definition of a vector.
 
 > A vector is an object equipped with a **suitable** way to add it to other vectors and multiply it by scalars.
 
@@ -351,9 +290,7 @@ None of these rules should be too surprising. For instance, `3 · v + 5 · v` co
 
 The takeaway from these rules is that not all addition and multiplication operations are created equal. We need to verify each of the rules to ensure that addition and multiplication behave as expected. If so, the objects in question can rightly be called vectors. A vector space is a collection of compatible vectors. Here’s the definition:  
 
-> **vector space** is a collection of objects (called vectors), equipped with suitable vector addition
-> and scalar multiplication operations, such that every linear combination of vectors in the collection produces a
-> vector that is also in the collection  
+> **vector space** is a collection of objects (called vectors), equipped with **suitable** **vector addition** and **scalar multiplication operations**, such that every linear combination of vectors in the collection produces a vector that is also in the collection  
 
 A collection like `[Vec2(1,0), Vec2(5,-3), Vec2(1.1,0.8)]` is a group of vectors that can be suitably added and multiplied, but it is not a vector space. For instance, `1 * Vec2(1,0) + 1 * Vec2(5,-3) = Vec2(6,-3)` the result is not in the collection.
 
@@ -363,7 +300,7 @@ There are two implications of the fact that vector spaces need to contain all th
 
 - no matter what vector `v` you pick in a vector space, `0 · v` gives you the same result, which is called the **zero vector** and denoted as `0`. Adding the zero vector to any vector leaves that vector unchanged: `0 + v = v + 0 = v`. 
 - every vector v has an opposite vector, `-1 * v`, written as `-v`. Due to rule 2.3, `v + -v = (1 + -1)
-  · v = 0 · v = 0`. For every vector, there is another vector in the vector space that “cancels it out” by addition. 
+  · v = 0 · v = 0`. For every vector, there is another vector in the vector space that “*cancels it out*” by addition. 
 
 As an exercise, you can improve the Vector class by adding a zero vector and a negation function as required members. A class like Vec2 or Vec3 is not a collection per se, but it does describe a collection of values. In this way, we can think of the classes Vec2 and Vec3 as representing two different vector spaces,and their instances represent vectors. 
 
@@ -388,7 +325,7 @@ s * (u + v) == s * v + s * u
 # true 
 ```
 
-This is often how unit tests are written, but it’s a pretty weak test because we’re only trying one example. We can make it stronger by plugging in random numbers and ensuring that it works. Here I use the random.uniform function to generate evenly distributed floating-point numbers between -10 and 10:
+This is often how unit tests are written, but it’s a pretty weak test because we’re only trying one example. We can make it stronger by plugging in random numbers and ensuring that it works. 
 
 ```python
 from hypothesis import given, note, strategies as st
@@ -475,41 +412,6 @@ We’ve spent a lot of time on the coordinate vectors Vec2 and Vec3 so far, so c
 One special case worth mentioning is the class we might call Vec1, vectors with a single coordinate. The implementation looks like this:  
 
 ```python
-from abc import ABCMeta, abstractmethod, abstractclassmethod, abstractproperty
-
-class Vector(metaclass=ABCMeta):
-    @abstractmethod
-    def scale(self, scalar):
-        pass
-
-    @abstractmethod
-    def add(self, other):
-        pass
-
-    @abstractclassmethod
-    @abstractproperty
-    def zero_vector(self):
-        pass
-
-    def negation_vector(self):
-        return self.scale(-1)
-
-    def subtract(self, other):
-        return self.add(other.scale(-1))
-
-    def __mul__(self, scalar):
-        return self.scale(scalar)
-
-    def __rmul__(self, scalar):
-        return self.scale(scalar)
-
-    def __add__(self, other):
-        return self.add(other)
-
-    def __sub__(self, other):
-        return self.subtract(other)
-
-
 class Vec1(Vector):
     def __init__(self, x):
         self.x = x
@@ -520,12 +422,12 @@ class Vec1(Vector):
     def scale(self, scalar):
         return Vec1(scalar * self.x)
 
-    def zero_vector(cls):
+    @classmethod
+    def zero(cls):
         return Vec1(0)
 
     def __eq__(self, other):
         return self.x == other.x
-
     def __repr__(self):
         return "Vec1({})".format(self.x)
 
@@ -544,27 +446,26 @@ class Vec0(Vector):
 
     def __eq__(self, other):
         return self.__class__ == other.__class__ == Vec0
-
     def __repr__(self):
         return "Vec0()"
 ```
 
 This is a lot of boilerplate to wrap a single number, and it doesn’t give us any arithmetic we don’t already have. Adding and multiplying Vec1 scalar objects is just addition and multiplication of the underlying numbers:  
 
-For this reason, we probably will never need a Vec1 class. But it is important to know that numbers on their own are vectors. The set of all real numbers (including integers, fractions, and irrational numbers like 𝜋𝜋) is denoted as ℝ, and it is a vector space in its own right. This is a special case where the scalars and the vectors are the same kind of objects.
+For this reason, we probably will never need a Vec1 class.
 
-Coordinate vector spaces are denoted `ℝn`, where n is the dimension or number of coordinates. For instance, the 2D plane is denoted as `ℝ2` and 3D space is denoted as `ℝ3`. As long as you use real numbers as your scalars, any vector space you stumble across is some ℝn in disguise.1 This is why we need to mention the vector space ℝ, even if it is boring. The other vector space we need to mention is the zero-dimensional one, `ℝ0`. This is the set of vectors with zero coordinates that we can describe as empty tuples or as a Vec0 class inheriting from Vector:  
+> numbers on their own are vectors. The set of all real numbers (including integers, fractions, and irrational numbers like 𝜋𝜋) is denoted as `ℝ`, and it is a vector space in its own right. This is a special case where the scalars and the vectors are the same kind of objects.
 
-That covers it for coordinate vectors of dimensions zero, one, two, three, or more. Now, when you see a vector in the wild, you’ll be able to match it up with one of these vector spaces.  
+Coordinate vector spaces are denoted `ℝn`, where n is the dimension or number of coordinates. For instance, the 2D plane is denoted as `ℝ2` and 3D space is denoted as `ℝ3`. As long as you use real numbers as your scalars, any vector space you stumble across is some `ℝn` in disguise.1 This is why we need to mention the vector space `ℝ`, even if it is boring. The other vector space we need to mention is the zero-dimensional one, `ℝ0`. This is the set of vectors with zero coordinates that we can describe as empty tuples or as a Vec0 class inheriting from Vector:  
 
 ### identifying vector spaces in the wild
 
-Let’s return to an example from chapter 1 and look at a data set of used Toyota Priuses. In the source code, you’ll see how to load the data set generously provided by my friend Dan Rathbone at CarGraph.com. To make the cars easy to work with, I’ve loaded them into a class:  
+Let’s return to an example from chapter 1 and look at a data set of used Toyota Priuses. To make the cars easy to work with, I’ve loaded them into a class:  
 
-It would be useful to think of CarForSale objects as vectors. Then, for example, I could average them together as a linear combination to see what the typical Prius for sale looks like. To do that, I need to retrofit this class to inherit from Vector.
+It would be useful to think of CarForSale objects as **vectors**. Then, for example, I could average them together as a linear combination to see what the typical Prius for sale looks like. To do that, I need to retrofit this class to inherit from Vector.
 
 How can we add two cars? The numeric fields model_year, mileage, and price can be added like components of a vector, but the string properties can’t be added in a meaningful way. (Remember, you saw that we can’t think of strings as vectors.) When we do arithmetic on cars, the result is not a real car for sale but a virtual car defined by its properties. To represent this, I'll change all the string properties to the string “(virtual)” to remind us of this. Finally, we
-can’t add datetimes, but we can add time spans. In figure 6.3, I use the day I retrieved the data as a reference point and add the time spans since the cars were posted for sale. 
+can’t add datetimes, but we can add time spans. I use the day I retrieved the data as a reference point and add the time spans since the cars were posted for sale. 
 
 The sum of the first two cars is evidently a Prius from model year 4012 (maybe it can fly?) with 306,000 miles on it and going for an asking price of $6,100. It was posted for sale at 3:59 AM on the same day I looked at CarGraph.com. This unusual car doesn’t look too helpful, but bear with me, averages (as shown in the following) look a lot more meaningful:  
 
@@ -626,9 +527,7 @@ This has the effect of stretching the graph of the function g in the y direction
 
 ```python
 class Function(Vector):
-    def __init__(
-            self, f
-    ):
+    def __init__(self, f):
         self.f = f
 
     def add(self, other):
@@ -648,23 +547,20 @@ class Function(Vector):
         return self.f(x)
 
 
-new_function = 3 * Function(lambda x: x * 3)
-
-print(new_function(2))
-
-new_function = 2 * Function(lambda x: x * 3) - 6 * Function(lambda x: x / 2)
-
-print(new_function(2))
+f = 3 * Function(lambda x: x * 3)
+print(f(2))
+g = Function(lambda x: x / 2)
+combo = 2 * f - 6 * g
+print(combo(2))
 ```
 
-It’s possible to nicely wrap Python functions in a class that inherits from vector, and I leave it as an exercise for you. After doing so, you can write satisfying function arithmetic expressions like 3 * f or 2 * f - 6 * g. You can even make the class callable or able to accept arguments as if it were a function to allow expressions like (f + g)(6). Unfortunately, unit testing to determine if functions satisfy the vector space properties is much harder because it’s difficult to generate
-random functions or to test whether two functions are equal. 
+It’s possible to nicely wrap Python functions in a class that inherits from vector, and I leave it as an exercise for you. After doing so, you can write satisfying function arithmetic expressions like `3 * f` or `2 * f - 6 * g`. You can even make the class callable or able to accept arguments as if it were a function to allow expressions like `(f + g)(6)`. Unfortunately, unit testing to determine if functions satisfy the vector space properties is much harder because it’s difficult to generate random functions or to test whether two functions are equal. 
 
-To really know if two functions are equal, you have to know that they return the same output for every single possible input. That means a test for every real number or at least every float value! This brings us to another question: what is the dimension of the vector space of functions? Or, to be concrete, how many real number coordinates are needed to uniquely identify a function? Instead of naming the coordinates of a Vec3 object x, y, and z, you could index them from i = 1 to 3. Likewise, you could index the coordinates of a Vec15 from i = 1 to 15. A function, however, has infinitely many numbers that define it; for instance, the values f(x) for any value of x. In other words, you can think of the coordinates of f as being its values at every point, indexed by all real numbers instead of the first few integers. This means that the vector space of functions is infinite dimensional. This has important implications, but it mostly makes the vector space of all functions hard to work with. We’ll return to this space later, specifically looking at some subsets that are simpler. For now, let’s return to the comfort of finitely many dimensions and look at two more examples.  
+To really know if two functions are equal, you have to know that they return the same output for every single possible input. That means a test for every real number or at least every float value! This brings us to another question: what is the dimension of the vector space of functions? Or, to be concrete, how many real number coordinates are needed to uniquely identify a function? Instead of naming the coordinates of a Vec3 object x, y, and z, you could index them from i = 1 to 3. Likewise, you could index the coordinates of a Vec15 from i = 1 to 15. A function, however, has infinitely many numbers that define it; for instance, the values f(x) for any value of x. In other words, you can think of the coordinates of f as being its values at every point, indexed by all real numbers instead of the first few integers. This means that the **vector space of functions is infinite dimensional**. This has important implications, but it mostly makes the vector space of all functions hard to work with. We’ll return to this space later, specifically looking at some subsets that are simpler. For now, let’s return to the comfort of finitely many dimensions and look at two more examples.  
 
 ### treating matrices as vectors 
 
-Because an n-by-m matrix is a list of nXm numbers, albeit arranged in a rectangle, we can treat it as a nXm-dimensional vector. The only difference between the vector space of, say, 5×3 matrices from the vector space of 15D coordinate vectors is that the coordinates ar presented in a matrix. We still add and scalar multiply coordinate by coordinate. 
+Because an n-by-m matrix is a list of nXm numbers, albeit arranged in a rectangle, we can treat it as a nXm-dimensional vector. The only difference between the vector space of, say, 5×3 matrices from the vector space of 15D coordinate vectors is that the coordinates are presented in a matrix. We still add and scalar multiply coordinate by coordinate. 
 
 
 <img src="https://res.cloudinary.com/dri8yyakb/image/upload/v1632065372/5E0109A6-30BC-44B0-9683-C55836524EA9_zedhip.png"/>
@@ -673,8 +569,43 @@ Implementing a class for 5×3 matrices inheriting from Vector is more typing tha
 
 You could just as well create a Matrix2_by_2 class or a Matrix99_by_17 class to represent different vector spaces. In these cases, much of the implementation would be the same, but the dimensions would no longer be 15, they would be 2 · 2 = 4 or 99 · 17 = 1,683. As an exercise, you can create a Matrix class inheriting from Vector that includes all the data except for specified numbers of rows and columns. Then any `MatrixM_by_N` class could inherit from Matrix.
 
-The interesting thing about matrices isn’t that they are numbers arranged in grids, but rather that we can think of them as representing linear functions. We already saw that *lists of numbers and functions are two cases of vector spaces, but it turns out that matrices are vectors in both senses.* If a matrix A has n rows and m columns, it represents a linear function from m dimensional space (columns) to n-dimensional space (rows). (You can write A : `ℝm → ℝn` to say this same sentence in mathematical shorthand.) Just as we added and scalar-multiplied functions from `ℝ → ℝ`, so can we add and scalar multiply functions from `ℝm → ℝn`. In a mini-project at the end of this section, you can try running the
-vector space unit tests on matrices to check they are vectors in both senses. That doesn’t mean grids of numbers aren’t useful in their own right; sometimes we don’t care to interpret them as functions. For instance, we can use arrays of numbers to represent images.
+The interesting thing about matrices isn’t that they are numbers arranged in grids, but rather that we can think of them as representing linear functions. We already saw that *lists of numbers and functions are two cases of vector spaces, but it turns out that matrices are vectors in both senses.* If a matrix A has n rows and m columns, it represents a linear function from m dimensional space (columns) to n-dimensional space (rows). (You can write A : `ℝm → ℝn` to say this same sentence in mathematical shorthand.) Just as we added and scalar-multiplied functions from `ℝ → ℝ`, so can we add and scalar multiply functions from `ℝm → ℝn`. In a mini-project at the end of this section, you can try running the vector space unit tests on matrices to check they are vectors in both senses. That doesn’t mean grids of numbers aren’t useful in their own right; sometimes we don’t care to interpret them as functions. For instance, we can use arrays of numbers to represent images.
+
+
+$$
+\begin{bmatrix}
+    2 & 3 \\
+    5 & -1 \\
+\end{bmatrix} 
+\begin{bmatrix}
+    x \\
+    y\\
+\end{bmatrix} 
+=
+\begin{bmatrix}
+    8 \\
+    -2\\
+\end{bmatrix} = f(\begin{bmatrix}
+    x \\
+    y \\
+\end{bmatrix})
+$$
+
+$$
+A = \begin{bmatrix}
+    2 & 3 \\
+    5 & -1 \\
+\end{bmatrix} \rightarrow \text{mXn matrix}
+\\
+A\vec{v}= T(\vec{v}) \rightarrow \text{linear transformation from } \R_n \ to \ \R_m \\
+\\
+\vec{v} = \R_nvector \\
+resultaat = \R_mvector \\
+\\
+\textcolor{red}{m} X n \ and \ nX\textcolor{green}{1} \ = \ \textcolor{red}{m}X\textcolor{green}{1}\\
+\textcolor{red}{2} X 2 \ and \ 2X\textcolor{green}{1} \ = \ \textcolor{red}{2}X\textcolor{green}{1}
+$$
+
 
 ### manipulating images with vector operations
 
@@ -688,13 +619,13 @@ Python has a de-facto standard image manipulation library, PIL, which is distrib
 
 
 
-<img src="https://res.cloudinary.com/dri8yyakb/image/upload/v1632067282/97E516D5-B37B-4AB5-877F-E3F96AA81C7F_izmiwa.png"/>
+<img src="https://res.cloudinary.com/dri8yyakb/image/upload/v1632067282/97E516D5-B37B-4AB5-877F-E3F96AA81C7F_izmiwa.png" style="zoom:50%;" />
 
 
 
 While any ImageVector is valid, the minimum and maximum color values that render as visually different are 0 and 255, respectively. Because of this, the negative of any image you import will be black, having gone below the minimum brightness at every pixel. Likewise, positive scalar multiples quickly become washed out with most pixels exceeding the maximum displayable brightness. <img src="https://res.cloudinary.com/dri8yyakb/image/upload/v1632067282/24D8EEF0-E073-47F6-867E-6A78A62BE7B2_izvk6e.png"/>
 
-Vector arithmetic is clearly a general concept: the defining concepts of addition and scalar multiplication apply to numbers, coordinate vectors, functions, matrices, images, and many other kinds of objects. It’s striking to see such visual results when we apply the same math across unrelated domains. We’ll keep all of these examples of vector spaces in mind and continue to explore the generalizations we can make across them.  
+Vector arithmetic is clearly a general concept: the defining concepts of addition and scalar multiplication apply to numbers, coordinate vectors, functions, matrices, images, and many other kinds of objects. It’s striking to see such visual results when we apply the same math across unrelated domains. We’ll keep all of these examples of **vector spaces** in mind and continue to explore the generalizations we can make across them.  
 
 ## 6.3 looking for smaller vector spaces
 
@@ -715,23 +646,20 @@ Pictures that look like the one on the right live in a 900-dimensional subspace 
 
 ### identifying subspaces
 
-vector subspace, or subspace for short, is just what it sounds like: a vector space that exists inside another vector space. One example we’ve looked at a few times already is the 2D x,y plane within 3D space as the plane where z = 0. To be specific, the subspace consists of vectors of the form (x, y, 0). These vectors have three components, so they are veritable 3D vectors, but they form a subset that happens to be constrained to lie on a plane. For that reason, we say this is a 2D subspace of `ℝ3`.
+vector subspace, or subspace for short, is just what it sounds like: a vector space that exists inside another vector space. One example we’ve looked at before is the 2D x,y plane within 3D space as the plane where z = 0. To be specific, the subspace consists of vectors of the form `(x, y, 0)`. These vectors have three components, so they are veritable 3D vectors, but they form a subset that happens to be constrained to lie on a plane. For that reason, we say this is a 2D subspace of `ℝ3`.
 
-NOTE: At the risk of being pedantic, the 2D vector space `ℝ2`, which consists of the ordered pairs (x, y), is not
-technically a subspace of 3D space `ℝ3`. That’s because vectors of the form (x, y) are not 3D vectors. However, it
-has a one-to-one correspondence with the set of vectors (x, y, 0), and vector arithmetic looks the same whether
-or not the extra zero z-coordinate is present. For these reasons, I consider it okay to call `ℝ2` a subspace of `ℝ3`.
-Not every subset of 3D vectors is a subspace. The plane where z = 0 is special because the vectors (x, y, 0) form a self-contained vector space. 
+NOTE: At the risk of being pedantic, the 2D vector space `ℝ2`, which consists of the ordered pairs `(x, y)`, is not
+technically a subspace of 3D space `ℝ3`. That’s because vectors of the form `(x, y)` are not 3D vectors. However, it has a one-to-one correspondence with the set of vectors `(x, y, 0)`, and vector arithmetic looks the same whether or not the extra zero z-coordinate is present. For these reasons, I consider it okay to call `ℝ2` a subspace of `ℝ3`. Not every subset of 3D vectors is a subspace. The plane where z = 0 is special because the vectors (x, y, 0) form a self-contained vector space. 
 
 There’s no way to build a linear combination of vectors in this plane that somehow “escapes” it; the third coordinate always remains zero. In math lingo, the precise way to say that a subspace is **self-contained** is to say *it is closed under linear combinations*.
 
-To get the feel for what a vector subspace looks like in general, let’s search for subsets of vector spaces that are also subspaces (figure 6.13). What subsets of vectors in the plane can make a standalone vector space? 
+To get the feel for what a vector subspace looks like in general, let’s search for subsets of vector spaces that are also subspaces. What subsets of vectors in the plane can make a standalone vector space? 
 
 
 
 > Can we just draw any region in the plane and only take vectors that live within it?  
 >
-> The answer is no: the subset in figure 6.13 contains some vectors that lie on the x-axis and some that live on the y-axis. These can respectively be scaled to give us the standard basis vectors e1 = (1, 0) and e2 = (0, 1). From these vectors, we can make linear combinations to get to any point in the plane, not only the ones in S (figure 6.14). 
+> The answer is no: the subset contains some vectors that lie on the x-axis and some that live on the y-axis. These can respectively be scaled to give us the standard basis vectors e1 = (1, 0) and e2 = (0, 1). From these vectors, we can make linear combinations to get to any point in the plane, not only the ones in S (figure 6.14). 
 
 
 
@@ -755,9 +683,7 @@ This line, y = 0, is a vector subspace of `ℝ2`. As we originally found a 2D su
 
 
 
-The next step could be to set x = 0 as well. Once we’ve set both x = 0 and y = 0 to zero, there’s only one point remaining: the zero vector. This is a vector subspace as well! No matter how you take linear combinations of the zero vector, the result is the zero vector. This is a zerodimensional subspace of the 1D line, the 2D plane, and the 3D space. Geometrically, a zerodimensional subspace is a point, and that point has to be zero. If it were some other point, v for instance, it would also contain 0 · v = 0 and an infinity of other different scalar multiples like 3 · v and -42 · v. Let’s run with this idea.  
-
-
+The next step could be to set x = 0 as well. Once we’ve set both x = 0 and y = 0 to zero, there’s only one point remaining: the **zero vector**. This is a vector subspace as well! No matter how you take linear combinations of the zero vector, the result is the zero vector. This is a zero dimensional subspace of the 1D line, the 2D plane, and the 3D space. Geometrically, a zero dimensional subspace is a point, and that point has to be zero. If it were some other point, v for instance, it would also contain 0 · v = 0 and an infinity of other different scalar multiples like 3 · v and -42 · v. Let’s run with this idea.  
 
 ### starting with a single vector
 
@@ -765,25 +691,22 @@ A vector subspace containing a non-zero vector v contains (at least) all of the 
 
 <img src="https://res.cloudinary.com/dri8yyakb/image/upload/v1632122297/58FAFD5F-92F5-4D38-9C93-BFD3DB5C0CEB_vtggec.png"/>
 
-Each of these lines through the origin is a vector space. you can't escape any line by adding or scaling vectors that lie in it. the same goes for lines through the origin in 3D: they are all of the linear combinations of a single 3D vector, and they form a vector space. This is the first example of a general way of building subspaces: picking a vector and seeing all of the linear combinations that must come with it.  
+Each of these lines through the origin is a vector space. you can't escape any line by adding or scaling vectors that lie in it. the same goes for lines through the origin in 3D: they are all of the linear combinations of a single 3D vector, and they form a vector space. This is the first example of a general way of building **subspaces**: *picking a vector and seeing all of the linear combinations that must come with it*.  
 
 
 
 ### spanning bigger space
 
-Given a set of one or more vectors, their **span** is defined as the set of all linear combinations. The important part of the span is that *it’s automatically a vector subspace*. 
+Given a set of one or more vectors, their **span** is defined as the *set of all linear combinations*. The important part of the span is that *it’s automatically a vector subspace*. 
 
-To rephrase what we just discovered, the span of a single vector v is a line through the origin. We denote a **set** of
-objects by including them in curly braces, so the set containing only v is `{v}`, and the span of this set could be written `span({v})`.
+To rephrase what we just discovered, the span of a single vector v is a line through the origin. We denote a **set** of objects by including them in curly braces, so the set containing only v is `{v}`, and the span of this set could be written `span({v})`.
 
 As soon as we include another vector w, which is **not parallel** to v, the space gets bigger because we are no longer constrained to a single linear direction. The span of the set of two vectors `{v,w}` includes two lines, `span({v})` and `span({w})`, as well as linear combinations including both v and w, which lie on neither line (figure 6.17).  
 
 > once we have 2 non parallel vectors we can reach any point in the plane with a linear combination
 >
-> entire-plane = span({v,w})
->
-> most strikingly for the standard basis vectors. Any point (x, y) can be reached as the linear combination 
-> $$
+> `entire-plane = span({v,w})` most strikingly for the standard basis vectors. Any point (x, y) can be reached as the linear combination 
+>$$
 > x · (1, 0) + y · (0, 1).
 > $$
 > 
@@ -808,7 +731,7 @@ No pair of the vectors u, v, and w is parallel, but these vectors don’t span a
 
 
 
-If we want to add a vector to a set and span a higher dimensional space, the new vector needs to point in a new direction that isn’t included in the span of the existing ones. In the plane, three vectors always have some redundancy. For instance, as shown in figure 6.21, a linear combination of u and w gives us v.  
+If we want to add a vector to a set and span a higher dimensional space, *the new vector needs to point in a new direction that isn’t included in the span of the existing ones*. In the plane, three vectors always have some redundancy. For instance, as shown in figure 6.21, a linear combination of u and w gives us v.  
 
 
 
@@ -819,6 +742,8 @@ If we want to add a vector to a set and span a higher dimensional space, the new
 The right generalization of **“non-parallel”** is **“linearly independent.”** 
 
 > A collection of vectors is **linearly dependent** if any of its members can be obtained as a linear combination of the others.
+>
+> we can reach higher dimensions when a non linearly dependent vector gets added to the collection of vectors
 
 Two parallel vectors are linearly dependent because they are scalar multiples of each other. Likewise, the set of three vectors `{u, v, w}` is linearly dependent because we can make v out of a linear combination of u and w (or w out of a linear combination of u and v, and so on).
 
@@ -842,22 +767,36 @@ $$
 \end{bmatrix}
 \\
 \begin{bmatrix}
-    1 \\
-    0
-\end{bmatrix} = x\begin{bmatrix}
+    -1 \\
+    1
+\end{bmatrix} = 1\begin{bmatrix}
     1 \\
     1
-\end{bmatrix} + y\begin{bmatrix}
+\end{bmatrix} - 2\begin{bmatrix}
+    1 \\
+    0
+\end{bmatrix}
+\\
+\begin{bmatrix}
+    1 \\
+    1
+\end{bmatrix} = 2\begin{bmatrix}
+    1 \\
+    0
+\end{bmatrix} \begin{bmatrix}
     -1 \\
     1
 \end{bmatrix}
 \\
-\vec{a} = \begin{bmatrix}
+\begin{bmatrix}
+    1 \\
+    0
+\end{bmatrix} = 0.5\begin{bmatrix}
+    1 \\
+    1
+\end{bmatrix} -0.5\begin{bmatrix}
     -1 \\
-    -1
-\end{bmatrix} \begin{bmatrix}
-    2 \\
-    2
+    1
 \end{bmatrix}
 $$
 
@@ -867,37 +806,42 @@ By contrast, the `set {u,v}` is **linearly independent** because the components 
 
 Here’s a motivational question: is the following set of 3D vectors linearly independent? 
 
+
+
 `{(1, 1, 1), (2, 0, -3), (0, 0, 1), (-1, -2, 0)}`
 
 
 
-To answer this, you could draw these vectors in 3D or attempt to find a linear combination of three of them to get the fourth. But there’s an easier answer: only three vectors are needed to span all of 3D space, so any list of four 3D vectors has to have some redundancy. We know that a set with one or two 3D vectors will span a line or plane, respectively, rather than all of `ℝ3`. Three is the magic number of vectors that can both span a 3D space and still be
+To answer this, you could draw these vectors in 3D or attempt to find a linear combination of three of them to get the fourth. But there’s an easier answer: only three vectors are needed to span all of 3D space, so *any list of four 3D vectors has to have some redundancy*. We know that a set with one or two 3D vectors will span a line or plane, respectively, rather than all of `ℝ3`. Three is the magic number of vectors that can both span a 3D space and still be
 linearly independent. That’s really why we call it three-dimensional: there are three independent directions after all.
 
-A linearly independent set of vectors that spans a whole vector space like `{e1, e2, e3}` for `ℝ3` is called a **basis**. Any basis for a space has the same number of vectors, and that number is its dimension. For instance, we saw (1, 0) and (1, 1) are linearly independent and span the whole plane, so they are a basis for the vector space `ℝ2`. Likewise (1, 0, 0) and (0, 1, 0) are linearly independent and span the plane where z = 0 in ℝ3. That makes them a basis for this 2D subspace, albeit not a basis for all of ℝ3.
+A linearly independent set of vectors that spans a whole vector space like `{e1, e2, e3}` for `ℝ3` is called a **basis**. Any basis for a space has the same number of vectors, and that number is its dimension. For instance, we saw (1, 0) and (1, 1) are linearly independent and span the whole plane, so they are a basis for the vector space `ℝ2`. Likewise (1, 0, 0) and (0, 1, 0) are linearly independent and span the plane where z = 0 in `ℝ3`. That makes them a basis for this 2D subspace, albeit not a basis for all of `ℝ3`.
 
 I have already used the word basis in the context of the “standard basis” for `ℝ2` and for `ℝ3`. These are called “**standard**” because they are such natural choices. It takes no computation to decompose a coordinate vector in the **standard basis**; the coordinates are the scalars in this decomposition. For instance, (3, 2) means the linear combination 
 $$
 3 * (1, 0) + 2 * (0, 1) \\ 3e1 + 2e2.
 $$
 
-In general, deciding whether vectors are linearly independent requires some work. Even if you know that a vector is a linear combination of some other vectors, finding that linear combination requires doing some algebra. In the next chapter, we cover how to do that; it ends up being a ubiquitous computational problem in linear algebra. But before that let’s get in some more practice identifying subspaces and measuring their dimensions.  
+In general, deciding whether vectors are linearly independent requires some work. Even if you know that a vector is a linear combination of some other vectors, *finding that linear combination requires doing some algebra*. In the next chapter, we cover how to do that; it ends up being a ubiquitous computational problem in linear algebra. But before that let’s get in some more practice identifying subspaces and measuring their dimensions.  
 
 > in the next chapter we will see how to find the right scalar to get a given coordinate using **standard vectors**
 
 ### finding subspaces of the vector space of functions
 
-Mathematical functions from `ℝ` to `ℝ` contain an infinite amount of data, namely the output value when they are given any of infinitely many real numbers as inputs. That doesn’t mean that it takes infinite data to describe a function though. For instance, a linear function requires only two real numbers. They are the values of a and b in this general formula that you’ve probably seen: f(x) = ax + b
+Mathematical functions from `ℝ` to `ℝ` contain an infinite amount of data, namely the output value when they are given any of infinitely many real numbers as inputs. That doesn’t mean that it takes infinite data to describe a function though. For instance, a *linear function requires only two real numbers*. They are the values of a and b in this general formula that you’ve probably seen: `f(x) = ax + b`
 
 where a and b can be any real number. This is much more tractable than the infinite-dimensional space of all functions. Any linear function can be specified by two real numbers, so it looks like the subspace of linear functions will be 2D. 
 
-CAUTION: I’ve used the word linear in a lot of new contexts in the last few chapters. Here, I’m returning to a meaning you used in high school algebra: a **linear function** is a function whose graph is a straight line. Unfortunately, functions of this form are not linear in the sense we spent all of chapter 4 discussing (linear transformations that preserve scalar multiplication and vector addition), and you can prove it yourself in an exercise. Because of this, I’ll try to be clear as to which sense of the word linear I’m using at any point.
+CAUTION: I’ve used the word linear in a lot of new contexts in the last few chapters. Here, I’m returning to a meaning you used in high school algebra: 
 
+> a **linear function** is a function whose graph is a straight line.
+
+Unfortunately, functions of this form are not linear in the sense we spent all of chapter 4 discussing (linear transformations that preserve scalar multiplication and vector addition = **linear map**), and you can prove it yourself in an exercise. Because of this, I’ll try to be clear as to which sense of the word linear I’m using at any point.
 
 $$
- f(x) = ax + b \\
+f(x) = ax + b \\
  s f(x) =  f(sx) \ ? \text{ no this is different}\\
- f(x + y) =  f(x) + f(y) \ ? \text{ no this is different} 
+ f(x + y) =  f(x) + f(y) \ ? \text{ no this is different}
 $$
 We can quickly implement a `LinearFunction` class inheriting from Vector. Instead of holding a function as its underlying data, it can hold two numbers for the coefficients a and b. We can add these functions by adding coefficients because:
 $$
@@ -936,11 +880,13 @@ class LinearFunction(Vector):
 
 This is as close as we can get to a **standard basis** for linear functions: `f(x) = x` and `f(x) = 1` are clearly different functions, not scalar multiples of one another. By contrast, `f(x) = x` and `h(x) = 4x` are scalar multiples of one another and would not be a linearly independent pair. But `{x, 1}` is not the only basis we could have chosen; `{4x + 1, x - 3}` is also a basis. 
 
-The same concept applies to **quadratic functions** having the form `f(x) = ax2 + bx + c`. These form a 3D subspace of the vector space of functions with one choice of basis being `{x2, x, 1}`. *Linear functions form a vector subspace of the space of quadratic functions where the `x2` component is zero*. Linear functions and quadratic functions are examples of **polynomial functions**, which are *linear combinations of powers of x*; for example, 
+> the zero vector should always be included in a subspace because it's a scalar multiple of any vector (scalar is set to 0)
+
+The same concept applies to **quadratic functions** having the form `f(x) = ax2 + bx + c`. These form a 3D subspace of the vector space of functions with one choice of basis being `{x^2, x, 1}`. *Linear functions form a vector subspace of the space of quadratic functions where the `x^2` component is zero*. Linear functions and quadratic functions are examples of **polynomial functions**, which are *linear combinations of powers of x*; for example, 
 $$
 f(x) = a0 + a1x + a2x2 + … + an
 $$
-xn Linear and quadratic functions have degree 1 and 2, respectively, because those are the highest powers of x that appear in each. The polynomial written in the previous equation has degree n and n + 1 coefficients in total. In the exercises, 
+`xn` Linear and quadratic functions have degree 1 and 2, respectively, because those are the highest powers of x that appear in each. The polynomial written in the previous equation has degree n and n + 1 coefficients in total. In the exercises, 
 
 > you’ll see that the space of polynomials of any degree forms another vector subspace of the space of functions (of a higher degree).  
 
@@ -960,11 +906,11 @@ ImageVector([
 // This single vector spans a 1D subspace consisting of the images 
 // that are black except for a single, red pixel in the top left corner.
 // Scalar multiples of this image could have brighter or dimmer red pixels at this location
-```
 
 #1 Only the first pixel in the first row is non-zero: it has a red value of 1. All the other pixels have a value of (0,0,0).
 #2 The second row consists of 300 black pixels, each with a value (0,0,0).
-#3 I skipped the next 298 rows, but they are all identical to row 2; no pixels have any color values.
+#3 I skipped the next 298 rows, but they are all identical to row 2; no pixels have any color values
+```
 
 to show more pixels, we need more basis vectors. There’s not too much to be learned from writing out these 270,000 basis vectors. Let’s instead look for a small set of vectors that span an interesting subspace. Here’s a single ImageVector consisting of dark gray pixels at every position:  
 
@@ -980,8 +926,7 @@ More concisely, we could write this instead: `gray = ImageVector([(1,1,1) for _ 
 
 <img src="https://res.cloudinary.com/dri8yyakb/image/upload/v1632241512/B0CB77C4-894B-4183-AC06-4DFCA2FE2696_k1kvcr.png"/>
 
-This collection of images is “one-dimensional” in the colloquial sense. There’s only one thing changing about them, their brightness. Another way we can look at this subspace is by thinking about the pixel values. In this subspace,
-any image has the same value at each pixel. For any given pixel, there is a 3D space of color possibilities measured by red, green, and blue coordinates. *Gray pixels form a 1D subspace of this*, containing points with all coordinates s * (1, 1, 1) for some scalar s 
+These images is “one-dimensional” in the colloquial sense. There’s only one thing changing about them, their brightness. Another way we can look at this subspace is by thinking about the pixel values. In this subspace, any image has the same value at each pixel. For any given pixel, there is a 3D space of color possibilities measured by red, green, and blue coordinates. *Gray pixels form a 1D subspace of this*, containing points with all coordinates s * (1, 1, 1) for some scalar s 
 
 <img src="https://res.cloudinary.com/dri8yyakb/image/upload/v1632241888/E29B64DD-370A-4A99-A824-5EBF7D6CADD3_apq6rd.png"/>
 
@@ -993,17 +938,70 @@ There are many subspaces of images you can explore. You could look at solid colo
 
 ```
 ImageVector([
-(r,g,b), (r,g,b), (r,g,b), ..., (r,g,b),
-(r,g,b), (r,g,b), (r,g,b), ..., (r,g,b),
-...
+    (r,g,b), (r,g,b), (r,g,b), ..., (r,g,b),
+    (r,g,b), (r,g,b), (r,g,b), ..., (r,g,b),
+    ...
 ])
 ```
 
 There are no constraints on the pixels themselves; the only constraint on a solid color image is that every pixel is the same. As a final example, you could consider a subspace consisting of low resolution, grayscale images like that shown in figure 6.25.  
 
-<img src="https://res.cloudinary.com/dri8yyakb/image/upload/v1632242215/88509503-8B7C-47DE-A3AD-8548E137C342_zdspgg.png"/>
+<img src="https://res.cloudinary.com/dri8yyakb/image/upload/v1632242215/88509503-8B7C-47DE-A3AD-8548E137C342_zdspgg.png" style="zoom:67%;" />
 
 Each 10x10 pixel block has a constant gray value across its pixels, making it look like a 30x30 grid. There are only 30 · 30 = 900 numbers defining this image, so images like this one define a 900-dimensional subspace of the 270,000 dimensional space of images. It’s a lot less data, but it’s still possible to create recognizable images. One way to make an image in this subspace is to start with any image and average all red, green, and blue values in each 10x10 pixel block. This average gives you the brightness b, and you can set all pixels in the block to (b, b, b) to build your new image. This turns out to be a linear map (figure 6.26), and you can implement it later as a mini-project.  
 
+<img src="https://res.cloudinary.com/dri8yyakb/image/upload/v1632414365/5CD9211A-646C-4F5F-976F-CAA6BD26E0F7_whydr9.png"/>
 
+
+
+### exercises
+
+
+$$
+\hat{i} = \begin{bmatrix}
+    1 \\
+    0
+\end{bmatrix} \\
+\hat{j}_{not-basic} = \begin{bmatrix}
+    1 \\
+    1
+\end{bmatrix} \\
+
+\text{how do we get regular } \hat{j} \ ? \\
+
+\hat{j} = \hat{j}_{not-basic} - \hat{i}
+
+\\
+
+
+\hat{i}x
++
+y\hat{j}
+=
+\begin{bmatrix}
+    x \\
+    y
+\end{bmatrix}
+$$
+
+
+
+
+## summary
+
+
+
+- A **vector space** is a generalization of the 2D plane and 3D space: a collection of objects that can be added and multiplied by scalars. These addition and scalar multiplication operations must behave in certain ways (listed in section 6.1.5) to mimic the more familiar operations in 2D and 3D.
+- You can generalize in Python by pulling common features of different data types into an **abstract base class** and inheriting from it.
+- You can **overload arithmetic operators** in Python so that vector math looks the same in code, regardless of what kind of vectors you’re using.
+- Addition and scalar multiplication need to behave in certain ways to match your intuition, and you can verify these behaviours by writing unit tests involving random vectors.
+- Real-world objects like used cars can be described by several numbers (coordinates) and, therefore, treated as vectors. This lets us think about abstract concepts like a “weighted average of two cars.”
+- **Functions** can be thought of as vectors. You add or multiply them by adding or multiplying the expressions that define them.
+- Matrices can be thought of as vectors. The entries of an m×n matrix can be thought of as coordinates of an (m · n)-dimensional vector. Adding or scalar multiplying matrices has the same effect as adding or scalar multiplying the linear functions they define.
+- Images of a fixed height and width make up a vector space. They are defined by a red, green, and blue (RGB) value at each pixel, so the number of coordinates and, therefore, the dimension of the space is defined by three times the number of pixels.
+- A **subspace** of a vector space is a subset of the vectors in a vector space, which is a vector space on its own. That is, linear combinations of vectors in the subspace stay in the subspace.
+- For any line through the origin in 2D or 3D, the set vectors that lie on it form a 1D subspace. For any plane through the origin in 3D, the vectors that lie on it form a 2D subspace.
+- The **span** of a set of vectors is the collection of all linear combinations of the vectors. It is guaranteed to be a subspace of whatever space the vectors live in.
+- A set of vectors is **linearly independent** if you can’t make any one of them as a linear combination of the others. Otherwise, the set is linearly dependent. A set of **linearly independent** vectors that span a vector space (or subspace) is called a **basis** for that space. For a given space, any basis will have the same number of vectors. That number defines the dimension of the space.
+- When you can think of your data as living in a vector space, subspaces often consist of data with similar properties. For instance, the subset of image vectors that are solid colors forms a subspace.  
 
